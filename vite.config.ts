@@ -8,4 +8,7 @@ export default defineConfig({
     port: 3000,
   },
   plugins: [reactRefresh()],
+  define: {
+    'process.env': process.env
+  }
 })
