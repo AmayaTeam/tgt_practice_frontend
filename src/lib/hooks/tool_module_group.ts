@@ -4,7 +4,8 @@ import ToolModuleGroup from "../../graphql/queries/tool_module_groups";
 
 export const useToolModuleGroup = () => {
     const { data, loading, error } = useQuery(ToolModuleGroup, {
-        fetchPolicy: "cache-and-network",
+        fetchPolicy: 'network-only', // Used for first execution
+        nextFetchPolicy: 'cache-first', // Used for subsequent executions
     });
 
     return {

@@ -10,7 +10,7 @@ const HomePage = () => {
             <h1>Homepage</h1>
             <div className="container">
                 <h3>React Js Display Base64 Image</h3>
-                <img src={img} alt="Base64 Image"/>
+                <img src={img} width={200} alt="Base64 Image"/>
             </div>
         </>
     );
