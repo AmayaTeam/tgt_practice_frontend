@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import './List.css'; // Подключаем CSS для стилизации компонента
+import './List.css';
+import useTreeQuery from "../../lib/hooks/tree.ts";
 
 const List: React.FC = () => {
+    const { loading, error, data } = useTreeQuery();
     const [openLevel2, setOpenLevel2] = useState<number | null>(null); // Состояние для открытия/закрытия второго уровня
     const [openLevel3, setOpenLevel3] = useState<number | null>(null); // Состояние для открытия/закрытия третьего уровня
     const [searchText, setSearchText] = useState<string>(''); // Состояние для текста поиска
@@ -9,16 +11,22 @@ const List: React.FC = () => {
     const handleItemClick = (level: string, index: number) => {
         switch (level) {
             case 'level1':
-                setOpenLevel2(openLevel2 === index ? null : index); // Инвертируем состояние открытия/закрытия второго уровня
-                setOpenLevel3(null); // Закрываем третий уровень
+                setOpenLevel2(openLevel2 === index ? null : index);
+                // setOpenLevel3(null);
                 break;
             case 'level2':
-                setOpenLevel3(openLevel3 === index ? null : index); // Инвертируем состояние открытия/закрытия третьего уровня
+                if (openLevel2 === index) {
+                    setOpenLevel3(openLevel3 === index ? null : index);
+                } else {
+                    setOpenLevel2(index);
+                    setOpenLevel3(index);
+                }
                 break;
             default:
                 break;
         }
     };
+
 
     const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSearchText(event.target.value);
@@ -27,6 +35,9 @@ const List: React.FC = () => {
     const handleSearch = () => {
         // Обработка поиска
     };
+
+    if (loading) return <p>Loading...</p>; // Отображаем загрузку данных
+    if (error) return <p>Error :(</p>;
 
     return (
         <div className="list-container">
@@ -44,33 +55,49 @@ const List: React.FC = () => {
                 <div className="sort-label"><p>Sort :</p></div>
                 <div className="sort-options">
                     <label>
-                        <input type="checkbox" name="sort" value="novelty" defaultChecked />
+                        <input type="checkbox" name="sort" value="novelty" defaultChecked/>
                         <span>by novelty</span>
                     </label>
                     <label>
-                        <input type="checkbox" name="sort" value="alphabet" />
+                        <input type="checkbox" name="sort" value="alphabet"/>
                         <span>by alphabet</span>
                     </label>
                 </div>
             </div>
             <div className="list">
                 <ul className="level1">
-                    <li onClick={() => handleItemClick('level1', 1)}>Уровень 1</li>
-                    {openLevel2 === 1 && (
-                        <ul className="level2">
-                            <li onClick={() => handleItemClick('level2', 1)}>Уровень 2</li>
-                            <li onClick={() => handleItemClick('level2', 2)}>Уровень 2</li>
-                            <li onClick={() => handleItemClick('level2', 3)}>Уровень 2</li>
-                        </ul>
-                    )}
+
+                    {data.toolModuleGroups.map((group: any, index: number) => {
+                        if (!group.name) return null;
+
+                        return (
+                            <li key={index} onClick={() => handleItemClick('level1', index)}>
+                                {group.name}
+                                {openLevel2 === index && (
+                                    <ul className="level2">
+                                        {group.toolmoduletypeSet.map((type: any, typeIndex: number) => {
+                                            if (!type.name) return null;
+
+                                            return (
+                                                <li key={typeIndex}
+                                                    onClick={() => handleItemClick('level2', typeIndex)}>
+                                                    {type.name}
+                                                    {openLevel3 !== null && openLevel3 === typeIndex && (
+                                                        <ul className="level3">
+                                                            {type.toolmoduleSet.map((module: any, i: number) => (
+                                                                <li key={i}>{module.dbtname}</li>
+                                                            ))}
+                                                        </ul>
+                                                    )}
+                                                </li>
+                                            );
+                                        })}
+                                    </ul>
+                                )}
+                            </li>
+                        );
+                    })}
                 </ul>
-                {openLevel3 !== null && openLevel2 !== null && (
-                    <ul className="level3">
-                        <li>Уровень 3</li>
-                        <li>Уровень 3</li>
-                        <li>Уровень 3</li>
-                    </ul>
-                )}
             </div>
         </div>
     );
