@@ -1,10 +1,9 @@
-import React from "react";
+// import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ApolloProvider } from '@apollo/client';
 import client from './lib/apolloClient';
-import List from "./components/list/List.tsx";
-import Display from "./components/display/Display.tsx";
-import Header from "./components/header/Header.tsx";
+import LogIn from "./pages/LogIn/LogIn.tsx";
+import HomePage from "./pages/HomePage/HomePage.tsx"; // Импортируем HomePage компонент
 import './App.css';
 
 function App() {
@@ -12,21 +11,13 @@ function App() {
         <ApolloProvider client={client}>
             <BrowserRouter>
                 <Routes>
-                    <Route path="/" element={<HomePage />} />
+                    {/* Добавляем маршрут для LogIn и устанавливаем его как страницу по умолчанию */}
+                    <Route path="/" element={<LogIn />} />
+                    <Route path="/home" element={<HomePage />} />
                 </Routes>
             </BrowserRouter>
         </ApolloProvider>
     );
 }
-
-const HomePage: React.FC = () => {
-    return (
-        <div className="container">
-            <Header/>
-            <List />
-            <Display />
-        </div>
-    );
-};
 
 export default App;
