@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './Header.css'; // Подключаем файл стилей для Header
+import './Header.css';
 
 const Header: React.FC = () => {
     const [selectedUnit, setSelectedUnit] = useState('Choose the unit..');
