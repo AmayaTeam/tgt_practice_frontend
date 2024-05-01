@@ -1,4 +1,3 @@
-// Ваш компонент HomePage.tsx
 import React from "react";
 import Header from "../../components/header/Header.tsx";
 import List from "../../components/list/List.tsx";

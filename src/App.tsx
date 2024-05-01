@@ -11,7 +11,6 @@ function App() {
         <ApolloProvider client={client}>
             <BrowserRouter>
                 <Routes>
-                    {/* Добавляем маршрут для LogIn и устанавливаем его как страницу по умолчанию */}
                     <Route path="/" element={<LogIn />} />
                     <Route path="/home" element={<HomePage />} />
                 </Routes>
