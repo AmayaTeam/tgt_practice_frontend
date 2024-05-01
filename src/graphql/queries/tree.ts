@@ -7,7 +7,7 @@ export default gql`
       toolmoduletypeSet {
         name
         toolmoduleSet {
-          dbtname
+          sn
         }
       }
     }

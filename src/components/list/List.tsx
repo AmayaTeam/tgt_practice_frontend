@@ -85,7 +85,7 @@ const List: React.FC = () => {
                                                     {openLevel3 !== null && openLevel3 === typeIndex && (
                                                         <ul className="level3">
                                                             {type.toolmoduleSet.map((module: any, i: number) => (
-                                                                <li key={i}>{module.dbtname}</li>
+                                                                <li key={i}>{module.sn}</li>
                                                             ))}
                                                         </ul>
                                                     )}
