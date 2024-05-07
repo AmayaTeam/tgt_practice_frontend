@@ -4,24 +4,25 @@ import useTreeQuery from "../../lib/hooks/tree.ts";
 
 const List: React.FC = () => {
     const { loading, error, data } = useTreeQuery();
-    const [openLevel2, setOpenLevel2] = useState<number | null>(null); // Состояние для открытия/закрытия второго уровня
-    const [openLevel3, setOpenLevel3] = useState<number | null>(null); // Состояние для открытия/закрытия третьего уровня
+    const [openLevel2, setOpenLevel2] = useState<string | null>(null); // Состояние для открытия/закрытия второго уровня
+    const [openLevel3, setOpenLevel3] = useState<string | null>(null); // Состояние для открытия/закрытия третьего уровня
     const [searchText, setSearchText] = useState<string>(''); // Состояние для текста поиска
 
-    const handleItemClick = (level: string, index: number) => {
-        console.log(level, index);
+    const handleItemClick = (level: string, id: string) => {
+        console.log(level, id);
         switch (level) {
             case 'level1':
-                setOpenLevel2(openLevel2 === index ? null : index);
-                // setOpenLevel3(null);
+                setOpenLevel2(id);
                 break;
             case 'level2':
-                if (openLevel2 === index) {
-                    setOpenLevel3(openLevel3 === index ? null : index);
+                if (openLevel2 === id) {
+                    setOpenLevel3(null);
                 } else {
-                    setOpenLevel2(index);
-                    setOpenLevel3(index);
+                    setOpenLevel2(id);
+                    setOpenLevel3(id);
                 }
+                break;
+            case 'level3':
                 break;
             default:
                 break;
@@ -68,25 +69,33 @@ const List: React.FC = () => {
             <div className="list">
                 <ul className="level1">
 
-                    {data.toolModuleGroups.map((group: any, index: number) => {
+                    {data.toolModuleGroups.map((group: any) => {
                         if (!group.name) return null;
 
                         return (
-                            <li key={index} onClick={() => handleItemClick('level1', index)}>
+                            <li key={group.id} onClick={() => handleItemClick('level1', group.id)}>
                                 {group.name}
-                                {openLevel2 === index && (
+                                {openLevel2 === group.id && (
                                     <ul className="level2">
-                                        {group.toolmoduletypeSet.map((type: any, typeIndex: number) => {
+                                        {group.toolmoduletypeSet.map((type: any) => {
                                             if (!type.name) return null;
 
                                             return (
-                                                <li key={typeIndex}
-                                                    onClick={() => handleItemClick('level2', typeIndex)}>
+                                                <li key={type.id}
+                                                    onClick={() => handleItemClick('level2', type.id)}>
                                                     {type.name}
-                                                    {openLevel3 !== null && openLevel3 === typeIndex && (
+                                                    {openLevel3 !== null && openLevel3 === type.id && (
                                                         <ul className="level3">
-                                                            {type.toolmoduleSet.map((module: any, i: number) => (
-                                                                <li key={i}>{module.sn}</li>
+                                                            {type.toolmoduleSet.map((module: any) => (
+                                                                <li
+                                                                    key={module.id}
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation(); // Prevent the click from propagating to the parent li
+                                                                        handleItemClick('level3', module.id); // Handle click on level 3 item
+                                                                    }}
+                                                                >
+                                                                    {module.sn}
+                                                                </li>
                                                             ))}
                                                         </ul>
                                                     )}
