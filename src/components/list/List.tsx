@@ -7,6 +7,7 @@ const List: React.FC = () => {
     const [openLevel2, setOpenLevel2] = useState<string | null>(null); // Состояние для открытия/закрытия второго уровня
     const [openLevel3, setOpenLevel3] = useState<string | null>(null); // Состояние для открытия/закрытия третьего уровня
     const [searchText, setSearchText] = useState<string>(''); // Состояние для текста поиска
+    const [selectedLevel3, setSelectedLevel3] = useState<string | null>(null);
 
     const handleItemClick = (level: string, id: string) => {
         console.log(level, id);
@@ -23,6 +24,7 @@ const List: React.FC = () => {
                 }
                 break;
             case 'level3':
+                setSelectedLevel3(prevState => (prevState === id ? null : id));
                 break;
             default:
                 break;
@@ -90,9 +92,10 @@ const List: React.FC = () => {
                                                                 <li
                                                                     key={module.id}
                                                                     onClick={(e) => {
-                                                                        e.stopPropagation(); // Prevent the click from propagating to the parent li
-                                                                        handleItemClick('level3', module.id); // Handle click on level 3 item
+                                                                        e.stopPropagation();
+                                                                        handleItemClick('level3', module.id);
                                                                     }}
+                                                                    className={selectedLevel3 === module.id ? 'selected' : ''}
                                                                 >
                                                                     {module.sn}
                                                                 </li>

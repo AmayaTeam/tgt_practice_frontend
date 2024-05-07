@@ -32,6 +32,10 @@ ul {
     margin-left: 40px; /* Отступ для элементов третьего уровня */
 }
 
+.level3 > li.selected {
+    background-color: lightgrey;
+}
+
 .level1 > li::before {
     content: url('/src/assets/folder-icon.png'); /* Добавляем иконку папки перед элементами первого уровня */
     margin-right: 5px; /* Добавляем отступ между иконкой и текстом */
