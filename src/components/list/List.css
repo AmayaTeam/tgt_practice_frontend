@@ -1,10 +1,11 @@
 .list-container {
+    /*height: calc(100vh - 36px);*/
+    height: calc(100vh - 75px);
+    overflow-y: auto;
     width: 400px;
-    height: 100vh;
     background-color: white;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Тень для эффекта поднятости */
-    margin-top: 35px; /* Добавляем отступ сверху, чтобы выровнять с Header */
-    /*margin-left: -100px; !* Добавляем отступ слева, чтобы выровнять с Display *!*/
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-top: 35px;
     padding: 20px;
 }
 .list{
@@ -94,3 +95,5 @@ ul {
     cursor: pointer;
     position: relative;
 }
+
+
