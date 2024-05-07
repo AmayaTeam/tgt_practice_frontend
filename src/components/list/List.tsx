@@ -2,7 +2,12 @@ import React, { useState } from 'react';
 import './List.css';
 import useTreeQuery from "../../lib/hooks/tree.ts";
 
-const List: React.FC = () => {
+interface ListProps {
+    selectedItemId: string | null;
+    onItemClick: (itemId: string) => void;
+}
+
+const List: React.FC<ListProps> = ({ selectedItemId, onItemClick }) => {
     const { loading, error, data } = useTreeQuery();
     const [openLevel2, setOpenLevel2] = useState<string | null>(null); // Состояние для открытия/закрытия второго уровня
     const [openLevel3, setOpenLevel3] = useState<string | null>(null); // Состояние для открытия/закрытия третьего уровня
@@ -25,6 +30,7 @@ const List: React.FC = () => {
                 break;
             case 'level3':
                 setSelectedLevel3(prevState => (prevState === id ? null : id));
+                onItemClick(id);
                 break;
             default:
                 break;

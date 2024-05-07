@@ -2,15 +2,17 @@ import React from "react";
 import "./Display.css";
 import useToolModuleQuery from "../../lib/hooks/tool_module.ts";
 
-const Display: React.FC = () => {
-    const { loading, error, data } = useToolModuleQuery();
+interface DisplayProps {
+    selectedItemId: string | null;
+}
+
+const Display: React.FC<DisplayProps> = ({ selectedItemId }) => {
+    const { loading, error, data } = useToolModuleQuery(selectedItemId);
 
     if (loading) return <p>Loading...</p>;
     if (error) return <p>Error: {error.message}</p>;
 
     const img = "data:image/png;base64," + data.image;
-    console.log(data.toolModulesById);
-
     return (
         <div className="display-container">
             <div className="display">
@@ -59,12 +61,12 @@ const Display: React.FC = () => {
                                 <h4>Housing Params</h4>
                                 <div className="Housing_params-content">
                                     <div className="parametr">
-                                        <p  className="title_parametrs">Length* :</p>
+                                        <p className="title_parametrs">Length* :</p>
                                         <p className="num_parametrs">{data.dbtlength}</p>
-                                        <p className="unit_parametrs" >mm</p>
+                                        <p className="unit_parametrs">mm</p>
                                     </div>
                                     <div className="parametr">
-                                        <p  className="title_parametrs">Weight :</p>
+                                        <p className="title_parametrs">Weight :</p>
                                         <p className="num_parametrs">{data.dbtweight}</p>
                                         <p className="unit_parametrs">kg</p>
                                     </div>
@@ -93,18 +95,21 @@ const Display: React.FC = () => {
                                     </div>
                                 </div>
                             </div>
-                            <div className="params">
-
-                            </div>
-                            <div className="params">
-                                <h4>Housing Sensors</h4>
-                            </div>
+                            <h4>Sensors</h4>
+                            <ul>
+                                {data.toolinstalledsensorSet.map((sensor, index) => (
+                                    <li key={index}>
+                                        <p>Name: <input type="text" defaultValue={sensor.rToolsensortypeId.name}/></p>
+                                        <p>Record Point: <input type="text" defaultValue={sensor.rToolsensortypeId.name}/></p>
+                                    </li>
+                                ))}
+                            </ul>
                         </div>
 
                         <div className="display-content-info-image">
                             <img src={img} width={"100px"} alt={"alter image description"}/>
                             <div className="info-image-buttons">
-                                <button>Export Image</button>
+                            <button>Export Image</button>
                                 <button>Import Image</button>
                             </div>
                         </div>
