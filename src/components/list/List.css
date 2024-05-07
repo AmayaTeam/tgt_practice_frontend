@@ -18,14 +18,17 @@ ul {
 }
 
 .level1 > li {
+    cursor: pointer;
     margin-left: 0; /* Сбрасываем отступ для элементов первого уровня */
 }
 
 .level2 > li {
+    cursor: pointer;
     margin-left: 20px; /* Отступ для элементов второго уровня */
 }
 
 .level3 > li {
+    cursor: pointer;
     margin-left: 40px; /* Отступ для элементов третьего уровня */
 }
 

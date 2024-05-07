@@ -9,6 +9,7 @@ const List: React.FC = () => {
     const [searchText, setSearchText] = useState<string>(''); // Состояние для текста поиска
 
     const handleItemClick = (level: string, index: number) => {
+        console.log(level, index);
         switch (level) {
             case 'level1':
                 setOpenLevel2(openLevel2 === index ? null : index);
