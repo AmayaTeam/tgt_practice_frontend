@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import "./Display.css";
 import useToolModuleQuery from "../../lib/hooks/tool_module.ts";
 
@@ -13,6 +13,14 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId }) => {
     if (error) return <p>Error: {error.message}</p>;
 
     const img = "data:image/png;base64," + data.image;
+
+    const handleUndoChanges = () => {
+        const inputs = document.querySelectorAll('input');
+        inputs.forEach((input: HTMLInputElement) => {
+            input.value = input.defaultValue;
+        });
+    };
+
     return (
         <div className="display-container">
             <div className="display">
@@ -116,7 +124,7 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId }) => {
                     </div>
                     <div className="display-content-buttons">
                         <button>Save</button>
-                        <button>Cancel</button>
+                        <button onClick={handleUndoChanges}>Undo Changes</button>
                     </div>
                 </div>
             </div>
