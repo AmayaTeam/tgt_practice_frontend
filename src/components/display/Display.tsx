@@ -62,32 +62,32 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId }) => {
                                 <div className="Housing_params-content">
                                     <div className="parametr">
                                         <p className="title_parametrs">Length* :</p>
-                                        <p className="num_parametrs">{data.dbtlength}</p>
+                                        <input className="num_parametrs" defaultValue={Number(data.dbtlength).toFixed(2)}/>
                                         <p className="unit_parametrs">mm</p>
                                     </div>
                                     <div className="parametr">
                                         <p className="title_parametrs">Weight :</p>
-                                        <p className="num_parametrs">{data.dbtweight}</p>
+                                        <input className="num_parametrs" defaultValue={Number(data.dbtweight).toFixed(2)}/>
                                         <p className="unit_parametrs">kg</p>
                                     </div>
                                     <div className="parametr">
                                         <p className="title_parametrs">COMP STR :</p>
-                                        <p className="num_parametrs">{data.dbtcompStr}</p>
+                                        <input className="num_parametrs" defaultValue={Number(data.dbtcompStr).toFixed(2)}/>
                                         <p className="unit_parametrs">kg</p>
                                     </div>
                                     <div className="parametr">
                                         <p className="title_parametrs">OD* :</p>
-                                        <p className="num_parametrs">{data.dbtmaxOd}</p>
+                                        <input className="num_parametrs" defaultValue={Number(data.dbtmaxOd).toFixed(2)}/>
                                         <p className="unit_parametrs">mm</p>
                                     </div>
                                     <div className="parametr">
                                         <p className="title_parametrs">OD Closed :</p>
-                                        <p className="num_parametrs">{data.dbtmaxOdCollapsed}</p>
+                                        <input className="num_parametrs" defaultValue={Number(data.dbtmaxOdCollapsed).toFixed(2)}/>
                                         <p className="unit_parametrs">mm</p>
                                     </div>
                                     <div className="parametr">
                                         <p className="title_parametrs">OD Opened :</p>
-                                        <p className="num_parametrs">{data.dbtmaxOdOpened}</p>
+                                        <input className="num_parametrs" defaultValue={Number(data.dbtmaxOdOpened).toFixed(2)}/>
                                         <p className="unit_parametrs">mm</p>
                                     </div>
                                     <div>
@@ -95,21 +95,28 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId }) => {
                                     </div>
                                 </div>
                             </div>
-                            <h4>Sensors</h4>
-                            <ul>
+
+                            <div className="params">
+                                <h4>Housing Sensors</h4>
                                 {data.toolinstalledsensorSet.map((sensor, index) => (
-                                    <li key={index}>
-                                        <p>Name: <input type="text" defaultValue={sensor.rToolsensortypeId.name}/></p>
-                                        <p>Record Point: <input type="text" defaultValue={sensor.rToolsensortypeId.name}/></p>
-                                    </li>
+                                    <div className="Housing_params-content" key={index}>
+                                        <div className="parametr">
+                                            <p className="title_parametrs">Name: </p>
+                                            <input type="text" defaultValue={sensor.rToolsensortypeId.name}/>
+                                        </div>
+                                        <div className="parametr">
+                                            <p className="title_parametrs">Record Point: </p>
+                                            <input type="text" defaultValue={sensor.rToolsensortypeId.name}/>
+                                        </div>
+                                    </div>
                                 ))}
-                            </ul>
+                            </div>
                         </div>
 
                         <div className="display-content-info-image">
                             <img src={img} width={"100px"} alt={"alter image description"}/>
                             <div className="info-image-buttons">
-                            <button>Export Image</button>
+                                <button>Export Image</button>
                                 <button>Import Image</button>
                             </div>
                         </div>
