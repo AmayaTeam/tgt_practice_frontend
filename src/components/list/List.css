@@ -88,19 +88,25 @@ ul {
 .sort {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     width: 100%;
     margin-top: 10px; /* добавим небольшой отступ сверху для визуального разделения */
     margin-bottom: 10px;
 }
-
+.sort-label{
+    margin-right: 20px;
+}
 .sort-options {
     display: flex;
 }
 
 .sort-options label {
-    margin-right: 20px;
+    /*margin-right: 20px;*/
     cursor: pointer;
-    position: relative;
+    /*position: relative;*/
+    width: 120px;
+    display: flex;
+    align-items: center;
 }
 
 

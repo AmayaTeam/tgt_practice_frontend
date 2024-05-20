@@ -66,7 +66,7 @@ const List: React.FC<ListProps> = ({ selectedItemId, onItemClick }) => {
                 <div className="sort-options">
                     <label>
                         <input type="checkbox" name="sort" value="novelty" defaultChecked/>
-                        <span>by novelty</span>
+                        <p>by novelty</p>
                     </label>
                     <label>
                         <input type="checkbox" name="sort" value="alphabet"/>
