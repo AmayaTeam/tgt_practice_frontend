@@ -14,6 +14,8 @@ const List: React.FC<ListProps> = ({ selectedItemId, onItemClick }) => {
     const [searchText, setSearchText] = useState<string>(''); // Состояние для текста поиска
     const [selectedLevel3, setSelectedLevel3] = useState<string | null>(null);
 
+    
+
     const handleItemClick = (level: string, id: string) => {
         console.log(level, id);
         switch (level) {
@@ -59,10 +61,12 @@ const List: React.FC<ListProps> = ({ selectedItemId, onItemClick }) => {
                     placeholder="Enter..."
                     className="search-input"
                 />
-                <button onClick={handleSearch} className="search-button">SEARCH</button>
+                <button onClick={handleSearch} className="search-button"><p>SEARCH</p></button>
             </div>
             <div className="sort">
-                <div className="sort-label"><p>Sort :</p></div>
+                <div className="sort-label">
+                    <p>Sort :</p>
+                </div>
                 <div className="sort-options">
                     <label>
                         <input type="checkbox" name="sort" value="novelty" defaultChecked/>
@@ -70,7 +74,7 @@ const List: React.FC<ListProps> = ({ selectedItemId, onItemClick }) => {
                     </label>
                     <label>
                         <input type="checkbox" name="sort" value="alphabet"/>
-                        <span>by alphabet</span>
+                        <p>by alphabet</p>
                     </label>
                 </div>
             </div>
