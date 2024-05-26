@@ -1,8 +1,16 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect } from "react";
 import './LogInWindow.css';
+import {Link} from "react-router-dom";
 
 const LogInWindow: React.FC = () => {
+
+    // useEffect(() => {
+    //     const fetchLoginUrl = async () => {
+    //         window.location.href = "http://localhost:8000/login";
+    //     };
+    //     fetchLoginUrl();
+    // }, []);
+
     return (
         <div className="login-container">
             <div className="login-content">
@@ -10,7 +18,7 @@ const LogInWindow: React.FC = () => {
                     <h1>Log In</h1>
                 </div>
                 <div className="login-button">
-                    <Link to="/home" className="button-content" style={{textDecoration: 'none'}}>
+                    <Link to="http://localhost:8000/login" className="button-content" style={{textDecoration: 'none'}}>
                         <div className="button-icon">
                             <img src="/src/assets/MicrosoftLogo.png" alt="Microsoft Logo" />
                         </div>

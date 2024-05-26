@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./Display.css";
 import useToolModuleQuery from "../../lib/hooks/tool_module.ts";
+import { useSnUpdate } from "../../lib/hooks/ToolModuleUpdate/useSnUpdate.ts";
 
 interface DisplayProps {
     selectedItemId: string | null;
@@ -8,11 +9,38 @@ interface DisplayProps {
 
 const Display: React.FC<DisplayProps> = ({ selectedItemId }) => {
     const { loading, error, data } = useToolModuleQuery(selectedItemId);
+    const { snUpdate } = useSnUpdate();
+    const [sn, setSn ] = useState<string>("");
+
+    useEffect(() => {
+        if (data) {
+            setSn(data.sn);
+        }
+    }, [data]);
+
+
 
     if (loading) return <p>Loading...</p>;
     if (error) return <p>Error: {error.message}</p>;
 
     const img = "data:image/png;base64," + data.image;
+
+    const handleSnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setSn(event.target.value);
+    };
+
+    const handleSave = async () => {
+        if (selectedItemId) {
+            const variables = { id: selectedItemId, sn };
+            console.log("Sending update request with variables:", variables);
+            try {
+                await snUpdate({ variables });
+                alert('SN updated successfully');
+            } catch (error) {
+                console.error("Error updating SN:", error);
+            }
+        }
+    };
 
     const handleUndoChanges = () => {
         const inputs = document.querySelectorAll('input');
@@ -31,7 +59,7 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId }) => {
                                 <h4 className="heading-of-param">SN :</h4>
                             </div>
                             {/*<div>*/}
-                            <input type="text" defaultValue={data.sn}/>
+                            <input type="text" defaultValue={data.sn} onChange={handleSnChange} />
                             {/*</div>*/}
                         </div>
                         <div className="title">
@@ -130,7 +158,7 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId }) => {
                         </div>
                     </div>
                     <div className="display-content-buttons">
-                        <button>Save</button>
+                        <button onClick={handleSave}>Save</button>
                         <button onClick={handleUndoChanges}>Undo Changes</button>
                     </div>
                 </div>

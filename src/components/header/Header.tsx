@@ -1,10 +1,32 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Header.css';
+import { useQuery } from '@apollo/client';
+import GET_CURRENT_USER from '../../graphql/queries/get_current_user';
+import {jwtDecode} from 'jwt-decode';
+import Cookies from 'js-cookie';
 
 const Header: React.FC = () => {
     const [selectedUnit, setSelectedUnit] = useState('Choose the unit..');
     const [isUnitDropdownOpen, setIsUnitDropdownOpen] = useState(false);
     const [isUsernameDropdownOpen, setIsUsernameDropdownOpen] = useState(false);
+    const [username, setUsername] = useState('');
+
+    // Fetch the current user using GraphQL
+    const { loading, error, data } = useQuery(GET_CURRENT_USER);
+
+    useEffect(() => {
+        const token = Cookies.get('access_token');
+        console.log("token", document.cookie);
+        if (token) {
+            const decodedToken: any = jwtDecode(token);
+            setUsername(decodedToken.username);
+        } else if (data && data.me) {
+            setUsername(data.me.username);
+        }
+    }, [data]);
+
+    if (loading) console.log("Loading...");
+    if (error) console.log("Error:" + error.message);
 
     const toggleUnitDropdown = () => {
         setIsUnitDropdownOpen(!isUnitDropdownOpen);
@@ -20,12 +42,15 @@ const Header: React.FC = () => {
     };
 
     const handleLogout = () => {
-        //  логика для выхода пользователя
+        Cookies.remove('access_token');
+        Cookies.remove('refresh_token');
+        window.location.href = '/login'; // Redirect to login page
     };
 
     return (
         <div className="header">
             <div className="header-left">
+                {/* You can add left-side content here if needed */}
             </div>
 
             <div className="header-center">
@@ -33,11 +58,9 @@ const Header: React.FC = () => {
                     <p>{selectedUnit}</p>
                     {isUnitDropdownOpen && (
                         <div className="dropdown">
-                            <button onClick={() => handleUnitSelection('System 1')}>System 1</button>
-                            <button onClick={() => handleUnitSelection('System 2')}>System 2</button>
-                            <button onClick={() => handleUnitSelection('System 3')}>System 3</button>
-                            <button onClick={() => handleUnitSelection('System 4')}>System 4</button>
-                            <button onClick={() => handleUnitSelection('System 5')}>System 5</button>
+                            {['System 1', 'System 2', 'System 3', 'System 4', 'System 5'].map((unit) => (
+                                <button key={unit} onClick={() => handleUnitSelection(unit)}>{unit}</button>
+                            ))}
                         </div>
                     )}
                 </div>
@@ -45,7 +68,7 @@ const Header: React.FC = () => {
 
             <div className="header-right">
                 <div className="username" onClick={toggleUsernameDropdown}>
-                    <p>USERNAME</p>
+                    <p>{username}</p>
                     {isUsernameDropdownOpen && (
                         <div className="dropdown">
                             <button onClick={handleLogout}><p>LogOut</p></button>
