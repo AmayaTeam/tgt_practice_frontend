@@ -7,9 +7,11 @@
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     margin-top: 35px;
     padding: 20px;
-}
-.list{
 
+}
+
+.list {
+    padding-left: 20px;
 }
 ul {
     list-style: none; /* Убираем маркеры списка */
@@ -20,38 +22,48 @@ ul {
 .level1 > li {
     cursor: pointer;
     margin-left: 0; /* Сбрасываем отступ для элементов первого уровня */
+    font-size: 18px;
+    padding: 2px;
+    list-style-image: url("/src/assets/folder-icon.png");
 }
 
 .level2 > li {
     cursor: pointer;
     margin-left: 20px; /* Отступ для элементов второго уровня */
+    padding: 2px;
+    list-style-image: url("/src/assets/type-icon.png");
+
 }
 
 .level3 > li {
     cursor: pointer;
     margin-left: 40px; /* Отступ для элементов третьего уровня */
+    padding: 2px;
+    align-items: center;
+    list-style: url("/src/assets/module-icon.png");
+
 }
 
 .level3 > li.selected {
     background-color: lightgrey;
 }
 
-.level1 > li::before {
-    content: url('/src/assets/folder-icon.png'); /* Добавляем иконку папки перед элементами первого уровня */
-    margin-right: 5px; /* Добавляем отступ между иконкой и текстом */
+/*.level1 > li::before {*/
+/*    content: url('/src/assets/folder-icon.png'); !* Добавляем иконку папки перед элементами первого уровня *!*/
+/*    margin-right: 8px; !* Добавляем отступ между иконкой и текстом *!*/
 
-}
+/*}*/
 
 
-.level2 > li::before {
-    content: url('/src/assets/type-icon.png'); /* Иконка типа для элементов второго уровня */
-    margin-right: 5px; /* Добавляем отступ между иконкой и текстом */
-}
+/*.level2 > li::before {*/
+/*    content: url('/src/assets/type-icon.png'); !* Иконка типа для элементов второго уровня *!*/
+/*    margin-right: 8px; !* Добавляем отступ между иконкой и текстом *!*/
+/*}*/
 
-.level3 > li::before {
-    content: url('/src/assets/module-icon.png'); /* Иконка модуля для элементов третьего уровня */
-    margin-right: 5px; /* Добавляем отступ между иконкой и текстом */
-}
+/*.level3 > li::before {*/
+/*    !*content: url('/src/assets/module-icon.png'); !* Иконка модуля для элементов третьего уровня *!*!*/
+/*    margin-right: 8px; !* Добавляем отступ между иконкой и текстом *!*/
+/*}*/
 .search {
     margin-bottom: 5px;
     display: flex;
@@ -67,23 +79,26 @@ ul {
 }
 
 .search-button {
-    width: 72px;
-    height: 27px;
+    /*width: 72px;*/
+    height: 31px;
     background-color: #D9D9D9;
     border: 0.3px solid #AAAAAA;
     cursor: pointer;
     margin: 0;
     margin-left: 5px;
+    p{
+        margin: 0;
+    }
 }
 
 .sort p{
     color: #4c4c4c;
     margin: 0;
+    font-size: 18px;
 }
-.sort span{
-    color: #4c4c4c;
-}
-/* Добавьте это в ваш файл List.css */
+/*.sort span{*/
+/*    color: #4c4c4c;*/
+/*}*/
 
 .sort {
     display: flex;
@@ -95,6 +110,8 @@ ul {
 }
 .sort-label{
     margin-right: 20px;
+    height: 100%;
+    align-items: center;
 }
 .sort-options {
     display: flex;
