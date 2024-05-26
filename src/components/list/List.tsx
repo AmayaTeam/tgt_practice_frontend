@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './List.css';
 import useTreeQuery from "../../lib/hooks/tree.ts";
+import { ToolModuleGroup, ToolModuleType, ToolModule } from '../../types/interfaces';
 
 interface ListProps {
     selectedItemId: string | null;
@@ -9,12 +10,18 @@ interface ListProps {
 
 const List: React.FC<ListProps> = ({ selectedItemId, onItemClick }) => {
     const { loading, error, data } = useTreeQuery();
-    const [openLevel2, setOpenLevel2] = useState<string | null>(null); // Состояние для открытия/закрытия второго уровня
-    const [openLevel3, setOpenLevel3] = useState<string | null>(null); // Состояние для открытия/закрытия третьего уровня
-    const [searchText, setSearchText] = useState<string>(''); // Состояние для текста поиска
+    const [openLevel2, setOpenLevel2] = useState<string | null>(null);
+    const [openLevel3, setOpenLevel3] = useState<string | null>(null);
+    const [searchText, setSearchText] = useState<string>('');
     const [selectedLevel3, setSelectedLevel3] = useState<string | null>(null);
+    const [selectedSort, setSelectedSort] = useState<string>('novelty');
+    const [sortedData, setSortedData] = useState<ToolModuleGroup[]>([]);
 
-    
+    useEffect(() => {
+        if (data) {
+            setSortedData(sortData(data.toolModuleGroups, selectedSort));
+        }
+    }, [data, selectedSort]);
 
     const handleItemClick = (level: string, id: string) => {
         console.log(level, id);
@@ -39,16 +46,28 @@ const List: React.FC<ListProps> = ({ selectedItemId, onItemClick }) => {
         }
     };
 
-
     const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSearchText(event.target.value);
+    };
+
+    const handleCheckboxChange = (value: string) => {
+        setSelectedSort(value);
     };
 
     const handleSearch = () => {
         // Обработка поиска
     };
 
-    if (loading) return <p>Loading...</p>; // Отображаем загрузку данных
+    const sortData = (data: ToolModuleGroup[], sortBy: string) => {
+        if (sortBy === 'novelty') {
+            return [...data].sort((a, b) => new Date(b.toolmoduletypeSet[0].toolmoduleSet[0].dbdate).getTime() - new Date(a.toolmoduletypeSet[0].toolmoduleSet[0].dbdate).getTime());
+        } else if (sortBy === 'alphabet') {
+            return [...data].sort((a, b) => a.name.localeCompare(b.name));
+        }
+        return data;
+    };
+
+    if (loading) return <p>Loading...</p>;
     if (error) return <p>Error :(</p>;
 
     return (
@@ -68,20 +87,33 @@ const List: React.FC<ListProps> = ({ selectedItemId, onItemClick }) => {
                     <p>Sort :</p>
                 </div>
                 <div className="sort-options">
-                    <label>
-                        <input type="checkbox" name="sort" value="novelty" defaultChecked/>
+                    <label className="custom-checkbox">
+                        <input
+                            type="checkbox"
+                            name="sort"
+                            value="novelty"
+                            checked={selectedSort === 'novelty'}
+                            onChange={() => handleCheckboxChange('novelty')}
+                        />
+                        <span className="checkmark"></span>
                         <p>by novelty</p>
                     </label>
-                    <label>
-                        <input type="checkbox" name="sort" value="alphabet"/>
+                    <label className="custom-checkbox">
+                        <input
+                            type="checkbox"
+                            name="sort"
+                            value="alphabet"
+                            checked={selectedSort === 'alphabet'}
+                            onChange={() => handleCheckboxChange('alphabet')}
+                        />
+                        <span className="checkmark"></span>
                         <p>by alphabet</p>
                     </label>
                 </div>
             </div>
             <div className="list">
                 <ul className="level1">
-
-                    {data.toolModuleGroups.map((group: any) => {
+                    {sortedData.map((group: ToolModuleGroup) => {
                         if (!group.name) return null;
 
                         return (
@@ -89,16 +121,15 @@ const List: React.FC<ListProps> = ({ selectedItemId, onItemClick }) => {
                                 {group.name}
                                 {openLevel2 === group.id && (
                                     <ul className="level2">
-                                        {group.toolmoduletypeSet.map((type: any) => {
+                                        {group.toolmoduletypeSet.map((type: ToolModuleType) => {
                                             if (!type.name) return null;
 
                                             return (
-                                                <li key={type.id}
-                                                    onClick={() => handleItemClick('level2', type.id)}>
+                                                <li key={type.id} onClick={() => handleItemClick('level2', type.id)}>
                                                     {type.name}
                                                     {openLevel3 !== null && openLevel3 === type.id && (
                                                         <ul className="level3">
-                                                            {type.toolmoduleSet.map((module: any) => (
+                                                            {type.toolmoduleSet.map((module: ToolModule) => (
                                                                 <li
                                                                     key={module.id}
                                                                     onClick={(e) => {
