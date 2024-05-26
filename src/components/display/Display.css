@@ -4,7 +4,7 @@
     align-items: flex-start; /* Выравниваем компоненты по верхнему краю */
     /*margin-left: 100px;*/
     margin-right: 10%;
-    width: 60%;
+    width: 50%;
 }
 input{
     height: 32px;
