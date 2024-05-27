@@ -60,7 +60,11 @@ const List: React.FC<ListProps> = ({ selectedItemId, onItemClick }) => {
 
     const sortData = (data: ToolModuleGroup[], sortBy: string) => {
         if (sortBy === 'novelty') {
-            return [...data].sort((a, b) => new Date(b.toolmoduletypeSet[0].toolmoduleSet[0].dbdate).getTime() - new Date(a.toolmoduletypeSet[0].toolmoduleSet[0].dbdate).getTime());
+            return [...data].sort((a, b) => {
+                const aDate = a.toolmoduletypeSet?.[0]?.toolmoduleSet?.[0]?.dbdate;
+                const bDate = b.toolmoduletypeSet?.[0]?.toolmoduleSet?.[0]?.dbdate;
+                return new Date(bDate).getTime() - new Date(aDate).getTime();
+            });
         } else if (sortBy === 'alphabet') {
             return [...data].sort((a, b) => a.name.localeCompare(b.name));
         }
@@ -129,7 +133,7 @@ const List: React.FC<ListProps> = ({ selectedItemId, onItemClick }) => {
                                                     {type.name}
                                                     {openLevel3 !== null && openLevel3 === type.id && (
                                                         <ul className="level3">
-                                                            {type.toolmoduleSet.map((module: ToolModule) => (
+                                                            {type.toolmoduleSet?.map((module: ToolModule) => (
                                                                 <li
                                                                     key={module.id}
                                                                     onClick={(e) => {
