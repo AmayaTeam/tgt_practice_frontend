@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./Display.css";
 import useToolModuleQuery from "../../lib/hooks/tool_module.ts";
-import { useSnUpdate } from "../../lib/hooks/ToolModuleUpdate/useSnUpdate.ts";
 import { useToolModuleUpdate } from "../../lib/hooks/ToolModuleUpdate/useToolModuleUpdate.ts";
 
 interface DisplayProps {
@@ -13,12 +12,17 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId }) => {
     const { updateToolModule } = useToolModuleUpdate();
     const [sn, setSn] = useState<string>("");
     const [dbtlength, setDbtlength] = useState<string>("");
-
+    const [initialSn, setInitialSn] = useState<string>("");
+    const [initialDbtlength, setInitialDbtlength] = useState<string>("");
 
     useEffect(() => {
         if (data) {
-            setSn(data.sn || "");
-            setDbtlength(data.dbtlength !== undefined ? data.dbtlength.toString() : "");
+            const initialSnValue = data.sn || "";
+            const initialDbtlengthValue = data.dbtlength !== undefined ? data.dbtlength.toString() : "";
+            setSn(initialSnValue);
+            setDbtlength(initialDbtlengthValue);
+            setInitialSn(initialSnValue);
+            setInitialDbtlength(initialDbtlengthValue);
         }
     }, [data]);
 
@@ -34,10 +38,10 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId }) => {
         if (selectedItemId) {
             const variables: { id: string, sn?: string, dbtlength?: number } = { id: selectedItemId };
 
-            if (sn !== data.sn) {
+            if (sn !== initialSn) {
                 variables.sn = sn;
             }
-            if (dbtlength !== data.dbtlength.toString()) {
+            if (dbtlength !== initialDbtlength) {
                 variables.dbtlength = parseFloat(dbtlength);
             }
 
@@ -45,13 +49,13 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId }) => {
             try {
                 await updateToolModule({ variables });
                 alert('Update successful');
+                setInitialSn(sn);
+                setInitialDbtlength(dbtlength);
             } catch (error) {
                 console.error("Error updating:", error);
             }
         }
     };
-
-
 
     if (loading) return <p>Loading...</p>;
     if (error) return <p>Error: {error.message}</p>;
