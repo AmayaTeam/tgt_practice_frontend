@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./Display.css";
 import useToolModuleQuery from "../../lib/hooks/tool_module.ts";
 import { useSnUpdate } from "../../lib/hooks/ToolModuleUpdate/useSnUpdate.ts";
+import { useToolModuleUpdate } from "../../lib/hooks/ToolModuleUpdate/useToolModuleUpdate.ts";
 
 interface DisplayProps {
     selectedItemId: string | null;
@@ -9,14 +10,46 @@ interface DisplayProps {
 
 const Display: React.FC<DisplayProps> = ({ selectedItemId }) => {
     const { loading, error, data } = useToolModuleQuery(selectedItemId);
-    const { snUpdate } = useSnUpdate();
-    const [sn, setSn ] = useState<string>("");
+    const { updateToolModule } = useToolModuleUpdate();
+    const [sn, setSn] = useState<string>("");
+    const [dbtlength, setDbtlength] = useState<string>("");
+
 
     useEffect(() => {
         if (data) {
-            setSn(data.sn);
+            setSn(data.sn || "");
+            setDbtlength(data.dbtlength !== undefined ? data.dbtlength.toString() : "");
         }
     }, [data]);
+
+    const handleSnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setSn(event.target.value);
+    };
+
+    const handleDbtlengthChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setDbtlength(event.target.value);
+    };
+
+    const handleSave = async () => {
+        if (selectedItemId) {
+            const variables: { id: string, sn?: string, dbtlength?: number } = { id: selectedItemId };
+
+            if (sn !== data.sn) {
+                variables.sn = sn;
+            }
+            if (dbtlength !== data.dbtlength.toString()) {
+                variables.dbtlength = parseFloat(dbtlength);
+            }
+
+            console.log("Sending update request with variables:", variables);
+            try {
+                await updateToolModule({ variables });
+                alert('Update successful');
+            } catch (error) {
+                console.error("Error updating:", error);
+            }
+        }
+    };
 
 
 
@@ -25,22 +58,6 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId }) => {
 
     const img = "data:image/png;base64," + data.image;
 
-    const handleSnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setSn(event.target.value);
-    };
-
-    const handleSave = async () => {
-        if (selectedItemId) {
-            const variables = { id: selectedItemId, sn };
-            console.log("Sending update request with variables:", variables);
-            try {
-                await snUpdate({ variables });
-                alert('SN updated successfully');
-            } catch (error) {
-                console.error("Error updating SN:", error);
-            }
-        }
-    };
 
     const handleUndoChanges = () => {
         const inputs = document.querySelectorAll('input');
@@ -98,7 +115,7 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId }) => {
                                 <div className="Housing_params-content">
                                     <div className="parametr">
                                         <p className="title_parametrs">Length* :</p>
-                                        <input className="num_parametrs" defaultValue={Number(data.dbtlength).toFixed(2)}/>
+                                        <input className="num_parametrs" defaultValue={Number(data.dbtlength).toFixed(2)} onChange={handleDbtlengthChange}/>
                                         <p className="unit_parametrs">mm</p>
                                     </div>
                                     <div className="parametr">
