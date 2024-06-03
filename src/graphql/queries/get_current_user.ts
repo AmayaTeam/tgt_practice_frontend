@@ -4,6 +4,9 @@ const GET_CURRENT_USER = gql`
   query Me {
     me {
       username
+      groups {
+        name
+      }
     }
   }
 `;

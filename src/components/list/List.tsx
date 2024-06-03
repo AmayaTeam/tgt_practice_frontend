@@ -71,8 +71,8 @@ const List: React.FC<ListProps> = ({ selectedItemId, onItemClick }) => {
         return data;
     };
 
-    if (loading) return <p>Loading...</p>;
-    if (error) return <p>Error :(</p>;
+    if (loading) return console.log(loading);
+    if (error) return console.log(error);
 
     return (
         <div className="list-container">
