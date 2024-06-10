@@ -22,6 +22,7 @@ const Header: React.FC = () => {
             setUsername(decodedToken.username);
         } else if (data && data.me) {
             setUsername(data.me.username);
+            Cookies.set("role", data.me.groups[0].name);
         }
     }, [data]);
 
@@ -44,7 +45,7 @@ const Header: React.FC = () => {
     const handleLogout = () => {
         Cookies.remove('access_token');
         Cookies.remove('refresh_token');
-        window.location.href = '/login'; // Redirect to login page
+        window.location.href = 'http://localhost:8000/logout'; // Redirect to login page
     };
 
     return (

@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import "./Display.css";
 import useToolModuleQuery from "../../lib/hooks/tool_module.ts";
 import { useToolModuleUpdate } from "../../lib/hooks/ToolModuleUpdate/useToolModuleUpdate.ts";
+import Cookies from 'js-cookie';
+
 
 interface DisplayProps {
     selectedItemId: string | null;
@@ -25,6 +27,8 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId }) => {
     const [initialDbtmaxOdOpened, setInitialDbtmaxOdOpened] = useState<string>("");
     const [initialDbtmaxOdCollapsed, setInitialDbtmaxOdCollapsed] = useState<string>("");
     const [initialDbtcompStr, setInitialDbtcompStr] = useState<string>("");
+
+    const role = Cookies.get('role');
 
     useEffect(() => {
         if (data) {
@@ -126,8 +130,8 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId }) => {
         }
     };
 
-    if (loading) return <p>Loading...</p>;
-    if (error) return <p>Error: {error.message}</p>;
+    if (loading) return console.log("Loading")
+    if (error) return console.log("Error:" + error.message);
 
     const img = "data:image/png;base64," + data.image;
 
@@ -149,35 +153,35 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId }) => {
                                 <h4 className="heading-of-param">SN :</h4>
                             </div>
                             {/*<div>*/}
-                            <input type="text" defaultValue={data.sn} onChange={handleSnChange} />
+                            <input type="text" defaultValue={data.sn} onChange={handleSnChange} disabled={true}/>
                             {/*</div>*/}
                         </div>
                         <div className="title">
                             <div className="display-content-titles">
                                 <div className="title">
                                     <div className="heading-of-param">
-                                        <h4 className="heading-of-param">Group :</h4>
+                                        <h4 className="heading-of-param">Group: </h4>
                                     </div>
                                     {/*<div>*/}
-                                    <input type="text" defaultValue={data.rModuleTypeId.rModulesGroupId.name}/>
+                                    <input type="text" defaultValue={data.rModuleTypeId.rModulesGroupId.name} disabled={true}/>
                                     {/*</div>*/}
                                 </div>
                                 <div className="title">
                                     <div className="heading-of-param">
-                                        <h4 className="heading-of-param">Module Type :</h4>
+                                        <h4 className="heading-of-param">Module Type: </h4>
                                     </div>
                                     {/*<div>*/}
-                                    <input type="text" defaultValue={data.rModuleTypeId.name}/>
+                                    <input type="text" defaultValue={data.rModuleTypeId.name} disabled={true}/>
                                     {/*</div>*/}
                                 </div>
                             </div>
                         </div>
                         <div className="title">
                             <div className="heading-of-param">
-                                <h4 className="heading-of-param">Housing :</h4>
+                                <h4 className="heading-of-param">Housing: </h4>
                             </div>
                             {/*<div>*/}
-                            <input type="text" defaultValue={data.rModuleTypeId.rModulesGroupId.name + ":" + data.sn}/>
+                            <input type="text" defaultValue={data.rModuleTypeId.rModulesGroupId.name + ":" + data.sn} disabled={true}/>
                             {/*</div>*/}
                         </div>
                     </div>
@@ -188,32 +192,32 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId }) => {
                                 <div className="Housing_params-content">
                                     <div className="parametr">
                                         <p className="title_parametrs">Length* :</p>
-                                        <input className="num_parametrs" defaultValue={Number(data.dbtlength).toFixed(2)} onChange={handleDbtlengthChange}/>
+                                        <input className="num_parametrs" defaultValue={Number(data.dbtlength).toFixed(2)} onChange={handleDbtlengthChange} disabled={role == "user"}/>
                                         <p className="unit_parametrs">mm</p>
                                     </div>
                                     <div className="parametr">
                                         <p className="title_parametrs">Weight :</p>
-                                        <input className="num_parametrs" defaultValue={Number(data.dbtweight).toFixed(2)} onChange={handleDbtweightChange}/>
+                                        <input className="num_parametrs" defaultValue={Number(data.dbtweight).toFixed(2)} onChange={handleDbtweightChange} disabled={role == "user"}/>
                                         <p className="unit_parametrs">kg</p>
                                     </div>
                                     <div className="parametr">
                                         <p className="title_parametrs">COMP STR :</p>
-                                        <input className="num_parametrs" defaultValue={Number(data.dbtcompStr).toFixed(2)} onChange={handleDbtcompStrChange}/>
+                                        <input className="num_parametrs" defaultValue={Number(data.dbtcompStr).toFixed(2)} onChange={handleDbtcompStrChange} disabled={role == "user"}/>
                                         <p className="unit_parametrs">kg</p>
                                     </div>
                                     <div className="parametr">
                                         <p className="title_parametrs">OD* :</p>
-                                        <input className="num_parametrs" defaultValue={Number(data.dbtmaxOd).toFixed(2)} onChange={handleDbtmaxOdChange}/>
+                                        <input className="num_parametrs" defaultValue={Number(data.dbtmaxOd).toFixed(2)} onChange={handleDbtmaxOdChange} disabled={role == "user"}/>
                                         <p className="unit_parametrs">mm</p>
                                     </div>
                                     <div className="parametr">
                                         <p className="title_parametrs">OD Closed :</p>
-                                        <input className="num_parametrs" defaultValue={Number(data.dbtmaxOdCollapsed).toFixed(2)} onChange={handleDbtmaxOdCollapsedChange}/>
+                                        <input className="num_parametrs" defaultValue={Number(data.dbtmaxOdCollapsed).toFixed(2)} onChange={handleDbtmaxOdCollapsedChange} disabled={role == "user"}/>
                                         <p className="unit_parametrs">mm</p>
                                     </div>
                                     <div className="parametr">
                                         <p className="title_parametrs">OD Opened :</p>
-                                        <input className="num_parametrs" defaultValue={Number(data.dbtmaxOdOpened).toFixed(2)} onChange={handleDbtmaxOdOpenedChange}/>
+                                        <input className="num_parametrs" defaultValue={Number(data.dbtmaxOdOpened).toFixed(2)} onChange={handleDbtmaxOdOpenedChange} disabled={role == "user"}/>
                                         <p className="unit_parametrs">mm</p>
                                     </div>
                                     <div>
@@ -228,11 +232,11 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId }) => {
                                     <div className="Housing_params-content" key={index}>
                                         <div className="parametr">
                                             <p className="title_parametrs">Name: </p>
-                                            <input type="text" defaultValue={sensor.rToolsensortypeId.name}/>
+                                            <input type="text" defaultValue={sensor.rToolsensortypeId.name} disabled={role == "user"}/>
                                         </div>
                                         <div className="parametr">
                                             <p className="title_parametrs">Record Point: </p>
-                                            <input type="text" defaultValue={sensor.rToolsensortypeId.name}/>
+                                            <input type="text" defaultValue={sensor.rToolsensortypeId.name} disabled={role == "user"}/>
                                         </div>
                                     </div>
                                 ))}
@@ -247,10 +251,12 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId }) => {
                             </div>
                         </div>
                     </div>
+                    {role == 'manager' ? (
                     <div className="display-content-buttons">
                         <button onClick={handleSave}>Save</button>
                         <button onClick={handleUndoChanges}>Undo Changes</button>
                     </div>
+                    ) : null}
                 </div>
             </div>
         </div>
