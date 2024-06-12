@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./Display.css";
-import useToolModuleQuery from "../../lib/hooks/tool_module.ts";
-import { useToolModuleUpdate } from "../../lib/hooks/ToolModuleUpdate/useToolModuleUpdate.ts";
+import useToolModuleQuery from "src/lib/hooks/tool_module.ts";
+import { useToolModuleUpdate } from "src/lib/hooks/ToolModuleUpdate/useToolModuleUpdate.ts";
 import Cookies from 'js-cookie';
 
 

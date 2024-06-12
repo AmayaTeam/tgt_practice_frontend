@@ -1,7 +1,7 @@
 import React, {useState} from "react";
-import Header from "../../components/header/Header.tsx";
-import List from "../../components/list/List.tsx";
-import Display from "../../components/display/Display.tsx";
+import Header from "src/components/header/Header.tsx";
+import List from "src/components/list/List.tsx";
+import Display from "src/components/display/Display.tsx";
 
 const HomePage: React.FC = () => {
     const [selectedItemId, setSelectedItemId] = useState<string | null>(null);

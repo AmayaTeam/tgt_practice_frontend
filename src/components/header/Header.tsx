@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './Header.css';
 import { useQuery } from '@apollo/client';
-import GET_CURRENT_USER from '../../graphql/queries/get_current_user';
+import GET_CURRENT_USER from 'src/graphql/queries/get_current_user';
 import {jwtDecode} from 'jwt-decode';
 import Cookies from 'js-cookie';
 
@@ -45,6 +45,8 @@ const Header: React.FC = () => {
     const handleLogout = () => {
         Cookies.remove('access_token');
         Cookies.remove('refresh_token');
+        localStorage.removeItem('jwt_token');
+        localStorage.removeItem('refresh_token');
         window.location.href = 'http://localhost:8000/logout'; // Redirect to login page
     };
 

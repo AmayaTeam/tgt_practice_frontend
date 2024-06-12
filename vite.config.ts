@@ -10,5 +10,10 @@ export default defineConfig({
   plugins: [reactRefresh()],
   define: {
     'process.env': process.env
-  }
+  },
+  resolve: {
+    alias: {
+      src: "/src",
+    },
+  },
 })
