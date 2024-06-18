@@ -273,11 +273,13 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId }) => {
                                     <div className="Housing_params-content" key={index}>
                                         <div className="parametr">
                                             <p className="title_parametrs">Name: </p>
-                                            <input type="text" defaultValue={sensor.rToolsensortypeId.name} disabled={role == "user"} />
+                                            <input type="text" defaultValue={sensor.rToolsensortypeId.name}
+                                                   disabled={role == "user"}/>
                                         </div>
                                         <div className="parametr">
                                             <p className="title_parametrs">Record Point: </p>
-                                            <input type="text" defaultValue={sensor.rToolsensortypeId.name} disabled={role == "user"} />
+                                            <input type="text" defaultValue={sensor.rToolsensortypeId}
+                                                   disabled={role == "user"}/>
                                         </div>
                                     </div>
                                 ))}
@@ -285,7 +287,7 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId }) => {
                         </div>
 
                         <div className="display-content-info-image">
-                            <img src={img} width={"100px"} alt={"alter image description"} />
+                            <img src={img} width={"100px"} alt={"alter image description"}/>
                             <div className="info-image-buttons">
                                 <button onClick={handleInfoExport}>Export Info</button>
                                 <button onClick={handleImageExport}>Export Image</button>
