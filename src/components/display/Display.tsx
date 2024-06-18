@@ -278,7 +278,7 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId }) => {
                                         </div>
                                         <div className="parametr">
                                             <p className="title_parametrs">Record Point: </p>
-                                            <input type="text" defaultValue={sensor.rToolsensortypeId}
+                                            <input type="text" defaultValue={sensor.recordPoint}
                                                    disabled={role == "user"}/>
                                         </div>
                                     </div>
