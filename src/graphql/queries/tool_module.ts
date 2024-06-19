@@ -3,29 +3,41 @@ import { gql } from '@apollo/client';
 export default gql`
     query ToolModule($id: String!) {
         toolModulesById(id: $id) {
+            id
             sn
             dbsn
             dbtname
-            rModuleTypeId {
+            image
+            rModuleType {
+              name
+              rModulesGroup {
                 name
-                rModulesGroupId {
-                    name
-                }
+              }
             }
             toolinstalledsensorSet {
-                rToolsensortypeId {
-                    id
-                    name 
+              rToolsensortype {
+                id
+                name
+              }
+              recordPoint
+              unit {
+                name {
+                  en
                 }
-                recordPoint
+              }
             }
-            dbtlength
-            dbtweight
-            dbtmaxOd
-            dbtmaxOdOpened
-            dbtmaxOdCollapsed
-            dbtcompStr
-            image
+            parameterSet {
+              id
+              parameterType {
+                parameterName
+              }
+              parameterValue
+              unit {
+                name {
+                  en
+                }
+              }
+            }
         }
     }
 `;

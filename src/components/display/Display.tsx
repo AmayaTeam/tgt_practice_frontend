@@ -30,25 +30,25 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId }) => {
 
     const role = Cookies.get('role');
 
-    useEffect(() => {
-        if (data) {
-            setSn(data.sn || "");
-            setDbtlength(data.dbtlength !== undefined ? data.dbtlength.toString() : "");
-            setDbtweight(data.dbtweight !== undefined ? data.dbtweight.toString() : "");
-            setDbtmaxOd(data.dbtmaxOd !== undefined ? data.dbtmaxOd.toString() : "");
-            setDbtmaxOdOpened(data.dbtmaxOdOpened !== undefined ? data.dbtmaxOdOpened.toString() : "");
-            setDbtmaxOdCollapsed(data.dbtmaxOdCollapsed !== undefined ? data.dbtmaxOdCollapsed.toString() : "");
-            setDbtcompStr(data.dbtcompStr !== undefined ? data.dbtcompStr.toString() : "");
-
-            setInitialSn(data.sn || "");
-            setInitialDbtlength(data.dbtlength !== undefined ? data.dbtlength.toString() : "");
-            setInitialDbtweight(data.dbtweight !== undefined ? data.dbtweight.toString() : "");
-            setInitialDbtmaxOd(data.dbtmaxOd !== undefined ? data.dbtmaxOd.toString() : "");
-            setInitialDbtmaxOdOpened(data.dbtmaxOdOpened !== undefined ? data.dbtmaxOdOpened.toString() : "");
-            setInitialDbtmaxOdCollapsed(data.dbtmaxOdCollapsed !== undefined ? data.dbtmaxOdCollapsed.toString() : "");
-            setInitialDbtcompStr(data.dbtcompStr !== undefined ? data.dbtcompStr.toString() : "");
-        }
-    }, [data]);
+    // useEffect(() => {
+    //     if (data) {
+    //         setSn(data.sn || "");
+    //         setDbtlength(data.dbtlength !== undefined ? data.dbtlength.toString() : "");
+    //         setDbtweight(data.dbtweight !== undefined ? data.dbtweight.toString() : "");
+    //         setDbtmaxOd(data.dbtmaxOd !== undefined ? data.dbtmaxOd.toString() : "");
+    //         setDbtmaxOdOpened(data.dbtmaxOdOpened !== undefined ? data.dbtmaxOdOpened.toString() : "");
+    //         setDbtmaxOdCollapsed(data.dbtmaxOdCollapsed !== undefined ? data.dbtmaxOdCollapsed.toString() : "");
+    //         setDbtcompStr(data.dbtcompStr !== undefined ? data.dbtcompStr.toString() : "");
+    //
+    //         setInitialSn(data.sn || "");
+    //         setInitialDbtlength(data.dbtlength !== undefined ? data.dbtlength.toString() : "");
+    //         setInitialDbtweight(data.dbtweight !== undefined ? data.dbtweight.toString() : "");
+    //         setInitialDbtmaxOd(data.dbtmaxOd !== undefined ? data.dbtmaxOd.toString() : "");
+    //         setInitialDbtmaxOdOpened(data.dbtmaxOdOpened !== undefined ? data.dbtmaxOdOpened.toString() : "");
+    //         setInitialDbtmaxOdCollapsed(data.dbtmaxOdCollapsed !== undefined ? data.dbtmaxOdCollapsed.toString() : "");
+    //         setInitialDbtcompStr(data.dbtcompStr !== undefined ? data.dbtcompStr.toString() : "");
+    //     }
+    // }, [data]);
 
     const handleSnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSn(event.target.value);
@@ -163,7 +163,7 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId }) => {
                                         <h4 className="heading-of-param">Group: </h4>
                                     </div>
                                     {/*<div>*/}
-                                    <input type="text" defaultValue={data.rModuleTypeId.rModulesGroupId.name} disabled={true}/>
+                                    <input type="text" defaultValue={data.rModuleType.rModulesGroup.name} disabled={true}/>
                                     {/*</div>*/}
                                 </div>
                                 <div className="title">
@@ -171,7 +171,7 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId }) => {
                                         <h4 className="heading-of-param">Module Type: </h4>
                                     </div>
                                     {/*<div>*/}
-                                    <input type="text" defaultValue={data.rModuleTypeId.name} disabled={true}/>
+                                    <input type="text" defaultValue={data.rModuleType.name} disabled={true}/>
                                     {/*</div>*/}
                                 </div>
                             </div>
@@ -181,7 +181,7 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId }) => {
                                 <h4 className="heading-of-param">Housing: </h4>
                             </div>
                             {/*<div>*/}
-                            <input type="text" defaultValue={data.rModuleTypeId.rModulesGroupId.name + ":" + data.sn} disabled={true}/>
+                            <input type="text" defaultValue={data.rModuleType.rModulesGroup.name + ":" + data.sn} disabled={true}/>
                             {/*</div>*/}
                         </div>
                     </div>
@@ -190,39 +190,44 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId }) => {
                             <div className="params">
                                 <h4>Housing Params</h4>
                                 <div className="Housing_params-content">
-                                    <div className="parametr">
-                                        <p className="title_parametrs">Length* :</p>
-                                        <input className="num_parametrs" defaultValue={Number(data.dbtlength).toFixed(2)} onChange={handleDbtlengthChange} disabled={role == "user"}/>
-                                        <p className="unit_parametrs">mm</p>
-                                    </div>
-                                    <div className="parametr">
-                                        <p className="title_parametrs">Weight :</p>
-                                        <input className="num_parametrs" defaultValue={Number(data.dbtweight).toFixed(2)} onChange={handleDbtweightChange} disabled={role == "user"}/>
-                                        <p className="unit_parametrs">kg</p>
-                                    </div>
-                                    <div className="parametr">
-                                        <p className="title_parametrs">COMP STR :</p>
-                                        <input className="num_parametrs" defaultValue={Number(data.dbtcompStr).toFixed(2)} onChange={handleDbtcompStrChange} disabled={role == "user"}/>
-                                        <p className="unit_parametrs">kg</p>
-                                    </div>
-                                    <div className="parametr">
-                                        <p className="title_parametrs">OD* :</p>
-                                        <input className="num_parametrs" defaultValue={Number(data.dbtmaxOd).toFixed(2)} onChange={handleDbtmaxOdChange} disabled={role == "user"}/>
-                                        <p className="unit_parametrs">mm</p>
-                                    </div>
-                                    <div className="parametr">
-                                        <p className="title_parametrs">OD Closed :</p>
-                                        <input className="num_parametrs" defaultValue={Number(data.dbtmaxOdCollapsed).toFixed(2)} onChange={handleDbtmaxOdCollapsedChange} disabled={role == "user"}/>
-                                        <p className="unit_parametrs">mm</p>
-                                    </div>
-                                    <div className="parametr">
-                                        <p className="title_parametrs">OD Opened :</p>
-                                        <input className="num_parametrs" defaultValue={Number(data.dbtmaxOdOpened).toFixed(2)} onChange={handleDbtmaxOdOpenedChange} disabled={role == "user"}/>
-                                        <p className="unit_parametrs">mm</p>
-                                    </div>
-                                    <div>
+                                    {data.parameterSet.map((param, index) => (
+                                        <div className="parametr">
+                                            <p className="title_parametrs">{param.parameterType.parameterName}</p>
+                                            <input className="num_parametrs"
+                                                   defaultValue={Number(param.parameterValue).toFixed(2)}
+                                                   onChange={handleDbtlengthChange} disabled={role == "user"}/>
+                                            <p className="unit_parametrs">{param.unit.name.en}</p>
+                                        </div>
+                                    ))}
 
-                                    </div>
+                                    {/*<div className="parametr">*/}
+                                    {/*    <p className="title_parametrs">Weight :</p>*/}
+                                    {/*    <input className="num_parametrs" defaultValue={Number(data.dbtweight).toFixed(2)} onChange={handleDbtweightChange} disabled={role == "user"}/>*/}
+                                    {/*    <p className="unit_parametrs">kg</p>*/}
+                                    {/*</div>*/}
+                                    {/*<div className="parametr">*/}
+                                    {/*    <p className="title_parametrs">COMP STR :</p>*/}
+                                    {/*    <input className="num_parametrs" defaultValue={Number(data.dbtcompStr).toFixed(2)} onChange={handleDbtcompStrChange} disabled={role == "user"}/>*/}
+                                    {/*    <p className="unit_parametrs">kg</p>*/}
+                                    {/*</div>*/}
+                                    {/*<div className="parametr">*/}
+                                    {/*    <p className="title_parametrs">OD* :</p>*/}
+                                    {/*    <input className="num_parametrs" defaultValue={Number(data.dbtmaxOd).toFixed(2)} onChange={handleDbtmaxOdChange} disabled={role == "user"}/>*/}
+                                    {/*    <p className="unit_parametrs">mm</p>*/}
+                                    {/*</div>*/}
+                                    {/*<div className="parametr">*/}
+                                    {/*    <p className="title_parametrs">OD Closed :</p>*/}
+                                    {/*    <input className="num_parametrs" defaultValue={Number(data.dbtmaxOdCollapsed).toFixed(2)} onChange={handleDbtmaxOdCollapsedChange} disabled={role == "user"}/>*/}
+                                    {/*    <p className="unit_parametrs">mm</p>*/}
+                                    {/*</div>*/}
+                                    {/*<div className="parametr">*/}
+                                    {/*    <p className="title_parametrs">OD Opened :</p>*/}
+                                    {/*    <input className="num_parametrs" defaultValue={Number(data.dbtmaxOdOpened).toFixed(2)} onChange={handleDbtmaxOdOpenedChange} disabled={role == "user"}/>*/}
+                                    {/*    <p className="unit_parametrs">mm</p>*/}
+                                    {/*</div>*/}
+                                    {/*<div>*/}
+
+                                    {/*</div>*/}
                                 </div>
                             </div>
 
@@ -232,12 +237,15 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId }) => {
                                     <div className="Housing_params-content" key={index}>
                                         <div className="parametr">
                                             <p className="title_parametrs">Name: </p>
-                                            <input type="text" defaultValue={sensor.rToolsensortypeId.name} disabled={role == "user"}/>
+                                            <input type="text" defaultValue={sensor.rToolsensortype.name}
+                                                   disabled={role == "user"}/>
                                         </div>
                                         <div className="parametr">
                                             <p className="title_parametrs">Record Point: </p>
-                                            <input type="text" defaultValue={sensor.rToolsensortypeId.name} disabled={role == "user"}/>
+                                            <input type="text" defaultValue={sensor.recordPoint}
+                                                   disabled={role == "user"}/>
                                         </div>
+                                        <p className="unit_parametrs">{sensor.unit.name.en}</p>
                                     </div>
                                 ))}
                             </div>
