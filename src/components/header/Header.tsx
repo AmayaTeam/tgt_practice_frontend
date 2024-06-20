@@ -4,15 +4,16 @@ import { useQuery } from '@apollo/client';
 import GET_CURRENT_USER from '../../graphql/queries/get_current_user';
 import {jwtDecode} from 'jwt-decode';
 import Cookies from 'js-cookie';
+import { useUnitSystemsQuery } from '../../lib/hooks/useUnitSystemsQuery';
 
 const Header: React.FC = () => {
-    const [selectedUnit, setSelectedUnit] = useState('Choose the unit..');
+    const [selectedUnit, setSelectedUnit] = useState('Choose the unit system..');
     const [isUnitDropdownOpen, setIsUnitDropdownOpen] = useState(false);
     const [isUsernameDropdownOpen, setIsUsernameDropdownOpen] = useState(false);
     const [username, setUsername] = useState('');
 
-    // Fetch the current user using GraphQL
-    const { loading, error, data } = useQuery(GET_CURRENT_USER);
+    const { loading: userLoading, error: userError, data: userData } = useQuery(GET_CURRENT_USER);
+    const { loading: unitSystemsLoading, error: unitSystemsError, data: unitSystemsData } = useUnitSystemsQuery();
 
     useEffect(() => {
         const token = Cookies.get('access_token');
@@ -20,14 +21,15 @@ const Header: React.FC = () => {
         if (token) {
             const decodedToken: any = jwtDecode(token);
             setUsername(decodedToken.username);
-        } else if (data && data.me) {
-            setUsername(data.me.username);
-            Cookies.set("role", data.me.groups[0].name);
+        } else if (userData && userData.me) {
+            setUsername(userData.me.username);
+            Cookies.set("role", userData.me.groups[0].name);
         }
-    }, [data]);
+    }, [userData]);
 
-    if (loading) console.log("Loading...");
-    if (error) console.log("Error:" + error.message);
+    if (userLoading || unitSystemsLoading) console.log("Loading...");
+    if (userError) console.log("Error:" + userError.message);
+    if (unitSystemsError) console.log("Error:" + unitSystemsError.message);
 
     const toggleUnitDropdown = () => {
         setIsUnitDropdownOpen(!isUnitDropdownOpen);
@@ -59,8 +61,10 @@ const Header: React.FC = () => {
                     <p>{selectedUnit}</p>
                     {isUnitDropdownOpen && (
                         <div className="dropdown">
-                            {['System 1', 'System 2', 'System 3', 'System 4', 'System 5'].map((unit) => (
-                                <button key={unit} onClick={() => handleUnitSelection(unit)}>{unit}</button>
+                            {unitSystemsData?.unitSystems.map((unit: any) => (
+                                <button key={unit.id} onClick={() => handleUnitSelection(unit.name.en)}>
+                                    {unit.name.en}
+                                </button>
                             ))}
                         </div>
                     )}
