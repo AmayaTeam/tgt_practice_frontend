@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import './Header.css';
 import { useQuery } from '@apollo/client';
 import GET_CURRENT_USER from '../../graphql/queries/get_current_user';
-import {jwtDecode} from 'jwt-decode';
 import Cookies from 'js-cookie';
 
 const Header: React.FC = () => {
@@ -15,12 +14,7 @@ const Header: React.FC = () => {
     const { loading, error, data } = useQuery(GET_CURRENT_USER);
 
     useEffect(() => {
-        const token = Cookies.get('access_token');
-        console.log("token", document.cookie);
-        if (token) {
-            const decodedToken: any = jwtDecode(token);
-            setUsername(decodedToken.username);
-        } else if (data && data.me) {
+        if (data && data.me) {
             setUsername(data.me.username);
             Cookies.set("role", data.me.groups[0].name);
         }
@@ -43,9 +37,8 @@ const Header: React.FC = () => {
     };
 
     const handleLogout = () => {
-        Cookies.remove('access_token');
-        Cookies.remove('refresh_token');
-        window.location.href = 'http://localhost:8000/logout'; // Redirect to login page
+        Cookies.remove('role');
+        window.location.href = 'http://localhost:8000/logout_user'; // Redirect to login page
     };
 
     return (
