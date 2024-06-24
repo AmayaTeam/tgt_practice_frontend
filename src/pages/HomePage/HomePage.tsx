@@ -1,34 +1,25 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import Header from "../../components/header/Header.tsx";
 import List from "../../components/list/List.tsx";
 import Display from "../../components/display/Display.tsx";
+import { useQuery } from '@apollo/client';
+import GET_CURRENT_USER from '../../graphql/queries/get_current_user';
+import { Navigate } from "react-router-dom";
 
 const HomePage: React.FC = () => {
+    const { loading, error, data } = useQuery(GET_CURRENT_USER);
+
     const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
     const [selectedUnitId, setSelectedUnitId] = useState('');
 
     const handleItemClick = (itemId: string) => {
         setSelectedItemId(itemId);
     };
-    function getQueryParams() {
-        const params = {};
-        window.location.search.substring(1).split("&").forEach(pair => {
-            const [key, value] = pair.split("=");
-            params[decodeURIComponent(key)] = decodeURIComponent(value || "");
-        });
-        return params;
-    }
 
-    const queryParams = getQueryParams();
+    if (loading) return <div>Loading...</div>;
 
-    if (queryParams.jwt_token && queryParams.refresh_token) {
-        localStorage.setItem("jwt_token", queryParams.jwt_token);
-        localStorage.setItem("refresh_token", queryParams.refresh_token);
-
-        // Опционально: перенаправить пользователя на другую страницу после сохранения токенов
-        window.location.href = "/home";  // Замените на нужный вам маршрут
-    } else {
-        console.error("Токены не найдены в URL");
+    if (error || !data || !data.me) {
+        return <Navigate to="/" replace />;
     }
 
     return (

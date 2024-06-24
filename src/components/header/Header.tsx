@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import './Header.css';
 import { useQuery } from '@apollo/client';
 import GET_CURRENT_USER from '../../graphql/queries/get_current_user';
-import {jwtDecode} from 'jwt-decode';
 import Cookies from 'js-cookie';
 import { useUnitSystemsQuery } from '../../lib/hooks/useUnitSystemsQuery';
 import { useUserUnitSystemQuery } from '../../lib/hooks/useUserUnitSystemQuery';
@@ -26,15 +25,9 @@ const Header: React.FC<HeaderProps> = ({ selectedUnitId, setSelectedUnitId }) =>
     const { updateProfileUnitSystem } = useUpdateProfileUnitSystem();
 
     useEffect(() => {
-        const token = Cookies.get('access_token');
-        console.log("token", document.cookie);
-        if (token) {
-            const decodedToken: any = jwtDecode(token);
-            setUsername(decodedToken.username);
-            setUserId(decodedToken.user_id);
-        } else if (userData && userData.me) {
+        if (userData && userData.me) {
             setUsername(userData.me.username);
-            setUserId(userData.me.id);
+            setUserId(userData.me.user_id)
             Cookies.set("role", userData.me.groups[0].name);
         }
     }, [userData]);
@@ -85,9 +78,8 @@ const Header: React.FC<HeaderProps> = ({ selectedUnitId, setSelectedUnitId }) =>
     };
 
     const handleLogout = () => {
-        Cookies.remove('access_token');
-        Cookies.remove('refresh_token');
-        window.location.href = 'http://localhost:8000/logout'; // Redirect to login page
+        Cookies.remove('role');
+        window.location.href = 'http://localhost:8000/logout_user'; // Redirect to login page
     };
 
     return (

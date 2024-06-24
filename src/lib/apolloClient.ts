@@ -1,25 +1,25 @@
-import { ApolloClient, InMemoryCache, HttpLink, ApolloLink } from '@apollo/client';
+import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client';
+import { setContext } from '@apollo/client/link/context';
+import Cookie from "js-cookie";
 
-export const getAccessToken = () => {
-    console.log(localStorage.getItem('jwt_token'));
-    return localStorage.getItem('jwt_token');
-};
+const httpLink = createHttpLink({
+  uri: 'http://localhost:8000/graphql/',
+  credentials: 'include'
+});
 
-const httpLink = new HttpLink({ uri: 'http://localhost:8000/graphql/' });
-
-const authLink = new ApolloLink((operation, forward) => {
-    const token = getAccessToken();
-    operation.setContext({
-        headers: {
-            authorization: token ? `JWT ${token}` : '',
-        },
-    });
-    return forward(operation);
+const csrfToken = Cookie.get("csrftoken")
+const authLink = setContext((_, { headers }) => {
+  return {
+    headers: {
+      ...headers,
+      'X-CSRFToken': csrfToken ? csrfToken : '',
+    }
+  }
 });
 
 const client = new ApolloClient({
-    link: authLink.concat(httpLink),
-    cache: new InMemoryCache(),
+  link: authLink.concat(httpLink),
+  cache: new InMemoryCache()
 });
 
 export default client;

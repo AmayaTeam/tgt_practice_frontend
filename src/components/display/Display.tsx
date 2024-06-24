@@ -62,9 +62,52 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId, selectedUnitId }) => 
         }
     };
 
+    if (loading) return console.log("Loading")
+    if (error) return console.log("Error:" + error.message);
 
-    if (loading) return <div>Loading...</div>;
-    if (error) return <div>Error: {error.message}</div>;
+    const handleInfoExport = () => {
+
+        const sensors = data.toolinstalledsensorSet.map(item => ({
+            name: item.rToolsensortypeId.name,
+            recordPoint: item.recordPoint
+          }));
+
+        const toolModuleData = {
+            sn: data.sn,
+            group: data.rModuleTypeId.rModulesGroupId.name,
+            module_type: data.rModuleTypeId.name,
+            housing: data.rModuleTypeId.rModulesGroupId.name + ":" + data.sn,
+            length: Number(data.dbtlength).toFixed(2),
+            weight: Number(data.dbtweight).toFixed(2),
+            COMP_STR: Number(data.dbtcompStr).toFixed(2),
+            OD: Number(data.dbtmaxOd).toFixed(2),
+            OD_Closed: Number(data.dbtmaxOdCollapsed).toFixed(2),
+            OD_Opened: Number(data.dbtmaxOdOpened).toFixed(2),
+            housing_sensors: sensors
+        };
+
+        const fileData = JSON.stringify(toolModuleData);
+        const blob = new Blob([fileData], { type: "text/plain" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.download = data.sn + ".json";
+        link.href = url;
+        link.click();
+    };
+
+    const handleImageExport = async () => {
+        if (img !== undefined) {
+            const imgBlob = await fetch(img).then(res => res.blob());
+            const imgUrl = URL.createObjectURL(imgBlob);
+            const link = document.createElement('a');
+            link.href = imgUrl;
+            link.download = data.sn + '.png';
+            link.click();
+        }
+    };
+
+    if (loading) return console.log("Loading")
+    if (error) return console.log("Error:" + error.message);
 
     const img = "data:image/png;base64," + data.image;
     const role = Cookies.get('role');
@@ -85,7 +128,7 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId, selectedUnitId }) => 
                             <div className="heading-of-param">
                                 <h4 className="heading-of-param">SN :</h4>
                             </div>
-                            <input type="text" defaultValue={data.sn} disabled={true} />
+                            <input type="text" defaultValue={data.sn} disabled={true}/>
                         </div>
                         <div className="title">
                             <div className="display-content-titles">
@@ -151,12 +194,13 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId, selectedUnitId }) => 
                         <div className="display-content-info-image">
                             <img src={img} width={"100px"} alt={"alter image description"} />
                             <div className="info-image-buttons">
-                                <button>Export Image</button>
+                                <button onClick={handleInfoExport}>Export Info</button>
+                                <button onClick={handleImageExport}>Export Image</button>
                                 <button>Import Image</button>
                             </div>
                         </div>
                     </div>
-                    {role === 'manager' ? (
+                    {role == 'manager' ? (
                         <div className="display-content-buttons">
                             <button onClick={handleSave}>Save</button>
                             <button onClick={handleUndoChanges}>Undo Changes</button>
