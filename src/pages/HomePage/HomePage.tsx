@@ -5,6 +5,7 @@ import Display from "../../components/display/Display.tsx";
 
 const HomePage: React.FC = () => {
     const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
+    const [selectedUnitId, setSelectedUnitId] = useState('');
 
     const handleItemClick = (itemId: string) => {
         setSelectedItemId(itemId);
@@ -32,9 +33,9 @@ const HomePage: React.FC = () => {
 
     return (
         <div className="container">
-            <Header />
+            <Header selectedUnitId={selectedUnitId} setSelectedUnitId={setSelectedUnitId} />
             <List selectedItemId={selectedItemId} onItemClick={handleItemClick} />
-            <Display selectedItemId={selectedItemId} />
+            <Display selectedItemId={selectedItemId} selectedUnitId={selectedUnitId} />
         </div>
     );
 };

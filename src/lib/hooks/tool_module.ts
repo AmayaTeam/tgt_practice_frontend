@@ -1,14 +1,21 @@
 import { useQuery } from '@apollo/client';
 import ToolModule from "../../graphql/queries/tool_module";
 
-const useToolModuleQuery = (id: string | null) => {
-    const { loading, error, data } = useQuery(ToolModule, {variables: {id}});
+interface UseToolModuleQueryProps {
+    id: string | null;
+    unitSystem: string | null;
+}
+
+const useToolModuleQuery = ({ id, unitSystem }: UseToolModuleQueryProps) => {
+    console.log("Параметры из хука:", id, unitSystem);
+
+    const { loading, error, data } = useQuery(ToolModule, { variables: { id, unitSystem } });
 
     return {
         loading,
         error,
-        data: data?.toolModulesById || [],
+        data: data?.toolModulesByIdWithUnitSystem || {},
     };
-}
+};
 
 export default useToolModuleQuery;

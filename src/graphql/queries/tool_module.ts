@@ -1,8 +1,8 @@
 import { gql } from '@apollo/client';
 
 export default gql`
-    query ToolModule($id: String!) {
-        toolModulesById(id: $id) {
+    query toolModulesByIdWithUnitSystem($id: String!, $unitSystem: String!) {
+        toolModulesByIdWithUnitSystem(id: $id, unitSystem: $unitSystem) {
             id
             sn
             dbsn
