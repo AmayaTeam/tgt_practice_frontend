@@ -3,8 +3,7 @@ import "./Display.css";
 import useToolModuleQuery from "../../lib/hooks/tool_module.ts";
 import { useToolModuleUpdate } from "../../lib/hooks/ToolModuleUpdate/useToolModuleUpdate.ts";
 import Cookies from 'js-cookie';
-/* import Modal from "../modal/Modal.tsx";
- */
+import Modal from "../Modal/Modal.tsx";
 interface DisplayProps {
     selectedItemId: string | null;
 }
@@ -35,6 +34,13 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId }) => {
     const [dbtmaxOdCollapsedValid, setDbtmaxOdCollapsedValid] = useState<boolean>(true);
     const [dbtcompStrValid, setDbtcompStrValid] = useState<boolean>(true);
 
+
+    const [showModal, setShowModal] = useState<boolean>(false);
+    const [modalMessage, setModalMessage] = useState<string>("");
+    
+    const closeModal = () => {
+        setShowModal(false);
+    };
 
     const [errors, setErrors] = useState<{
         dbtlength: boolean,
@@ -132,7 +138,11 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId }) => {
                 dbtmaxOdCollapsed?: number,
                 dbtcompStr?: number
             } = { id: selectedItemId };
-
+            if (!dbtlengthValid || !dbtweightValid || !dbtmaxOdValid || !dbtmaxOdOpenedValid || !dbtmaxOdCollapsedValid || !dbtcompStrValid) {
+                setShowModal(true);
+                setModalMessage("The entered values have the wrong data type, the data will not be saved.");
+                return; 
+            }
             if (sn !== initialSn) {
                 variables.sn = sn;
             }
@@ -227,6 +237,8 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId }) => {
             input.value = input.defaultValue;
         });
     };
+    
+
     
     
 
@@ -367,6 +379,7 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId }) => {
                     ) : null}
                 </div>
             </div>
+            {showModal && <Modal onClose={closeModal} message={modalMessage} />}
         </div>
     );
 };
