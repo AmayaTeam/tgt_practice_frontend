@@ -76,25 +76,20 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId }) => {
 
 
 
-    const handleInputChange = (
-        field: keyof typeof errors, 
-        setter: React.Dispatch<React.SetStateAction<string>>, 
-        setValid: React.Dispatch<React.SetStateAction<boolean>>
-      ) => (
+    const handleInputChange = (setter: React.Dispatch<React.SetStateAction<string>>, setValid: React.Dispatch<React.SetStateAction<boolean>>) => (
         event: React.ChangeEvent<HTMLInputElement>
-      ) => {
+    ) => {
         const value = event.target.value;
         if (/^\d*\.?\d*$/.test(value)) {
-          setter(value);
-          setErrors(prev => ({ ...prev, [field]: false }));
-          setValid(true);
+            setter(value);
+/*             setErrors(prev => ({ ...prev, [field]: false }));
+ */            setValid(true);
         } else {
-          setter(value); // Update the value even if it's invalid to show the feedback
-          setErrors(prev => ({ ...prev, [field]: true }));
-          setValid(false);
+            setter(value); // Update the value even if it's invalid to show the feedback
+/*             setErrors(prev => ({ ...prev, [field]: true }));
+ */            setValid(false);
         }
-      };
-      
+    };
 
 
     const handleSnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -279,63 +274,59 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId }) => {
                                         <p className="title_parametrs">Length* :</p>
                                         <input className={`num_parametrs ${dbtlengthValid ? '' : 'invalid'}`} 
                                             value={dbtlength} 
-                                            onChange={handleInputChange('dbtlength', setDbtlength, setDbtlengthValid)} 
+                                            onChange={handleInputChange(setDbtlength, setDbtlengthValid)} 
                                             disabled={role === "user"} 
-                                            />
+                                        />
                                         <p className="unit_parametrs">mm</p>
                                     </div>
 
                                     <div className="parametr">
                                         <p className="title_parametrs">Weight :</p>
                                         <input className={`num_parametrs ${dbtweightValid ? '' : 'invalid'}`} 
-                                            value={dbtweight} 
-                                            onChange={handleInputChange('dbtweight', setDbtweight, setDbtweightValid)} 
-                                            disabled={role === "user"} 
-                                            />
+                                        value={dbtweight} 
+                                        onChange={handleInputChange(setDbtweight, setDbtweightValid)} 
+                                        disabled={role === "user"} />
                                         <p className="unit_parametrs">kg</p>
                                     </div>
 
                                     <div className="parametr">
                                         <p className="title_parametrs">COMP STR :</p>
                                         <input className={`num_parametrs ${dbtcompStrValid ? '' : 'invalid'}`} 
-                                            value={dbtcompStr} 
-                                            onChange={handleInputChange('dbtcompStr', setDbtcompStr, setDbtcompStrValid)} 
-                                            disabled={role === "user"} 
-                                            />
+                                        value={dbtcompStr} 
+                                        onChange={handleInputChange(setDbtcompStr, setDbtcompStrValid)} 
+                                        disabled={role === "user"} />
                                         <p className="unit_parametrs">kg</p>
                                     </div>
 
                                     <div className="parametr">
                                         <p className="title_parametrs">OD* :</p>
+
                                         <input className={`num_parametrs ${dbtmaxOdValid ? '' : 'invalid'}`} 
-                                            value={dbtmaxOd} 
-                                            onChange={handleInputChange('dbtmaxOd', setDbtmaxOd, setDbtmaxOdValid)} 
-                                            disabled={role === "user"} 
-                                            />
+                                        value={dbtmaxOd} 
+                                        onChange={handleInputChange(setDbtmaxOd, setDbtmaxOdValid)} 
+                                        disabled={role === "user"} />
                                         <p className="unit_parametrs">mm</p>
                                     </div>
 
                                     <div className="parametr">
                                         <p className="title_parametrs">OD Closed :</p>
+
                                         <input className={`num_parametrs ${dbtmaxOdCollapsedValid ? '' : 'invalid'}`} 
-                                            value={dbtmaxOdCollapsed} 
-                                            onChange={handleInputChange('dbtmaxOdCollapsed', setDbtmaxOdCollapsed, setDbtmaxOdCollapsedValid)} 
-                                            disabled={role === "user"} 
-                                            />
+                                        value={dbtmaxOdCollapsed} 
+                                        onChange={handleInputChange(setDbtmaxOdCollapsed, setDbtmaxOdCollapsedValid)} 
+                                        disabled={role === "user"} />
                                         <p className="unit_parametrs">mm</p>
                                     </div>
-
                                     <div className="parametr">
                                         <p className="title_parametrs">OD Opened :</p>
                                         <input className={`num_parametrs ${dbtmaxOdOpenedValid ? '' : 'invalid'}`} 
-                                            value={dbtmaxOdOpened} 
-                                            onChange={handleInputChange('dbtmaxOdOpened', setDbtmaxOdOpened, setDbtmaxOdOpenedValid)} 
-                                            disabled={role === "user"} 
-                                            />
+                                        value={dbtmaxOdOpened} 
+                                        onChange={handleInputChange(setDbtmaxOdOpened, setDbtmaxOdOpenedValid)} 
+                                        disabled={role === "user"} />
                                         <p className="unit_parametrs">mm</p>
                                     </div>
-
                                     <div>
+
                                     </div>
                                 </div>
                             </div>
