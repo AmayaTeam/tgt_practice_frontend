@@ -3,7 +3,8 @@ import "./Display.css";
 import useToolModuleQuery from "../../lib/hooks/tool_module.ts";
 import { useToolModuleUpdate } from "../../lib/hooks/ToolModuleUpdate/useToolModuleUpdate.ts";
 import Cookies from 'js-cookie';
-
+/* import Modal from "../modal/Modal.tsx";
+ */
 interface DisplayProps {
     selectedItemId: string | null;
 }
@@ -27,6 +28,30 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId }) => {
     const [initialDbtmaxOdCollapsed, setInitialDbtmaxOdCollapsed] = useState<string>("");
     const [initialDbtcompStr, setInitialDbtcompStr] = useState<string>("");
 
+    const [dbtlengthValid, setDbtlengthValid] = useState<boolean>(true);
+    const [dbtweightValid, setDbtweightValid] = useState<boolean>(true);
+    const [dbtmaxOdValid, setDbtmaxOdValid] = useState<boolean>(true);
+    const [dbtmaxOdOpenedValid, setDbtmaxOdOpenedValid] = useState<boolean>(true);
+    const [dbtmaxOdCollapsedValid, setDbtmaxOdCollapsedValid] = useState<boolean>(true);
+    const [dbtcompStrValid, setDbtcompStrValid] = useState<boolean>(true);
+
+
+    const [errors, setErrors] = useState<{
+        dbtlength: boolean,
+        dbtweight: boolean,
+        dbtmaxOd: boolean,
+        dbtmaxOdOpened: boolean,
+        dbtmaxOdCollapsed: boolean,
+        dbtcompStr: boolean
+    }>({
+        dbtlength: false,
+        dbtweight: false,
+        dbtmaxOd: false,
+        dbtmaxOdOpened: false,
+        dbtmaxOdCollapsed: false,
+        dbtcompStr: false
+    });
+
     const role = Cookies.get('role');
 
     useEffect(() => {
@@ -49,11 +74,34 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId }) => {
         }
     }, [data]);
 
+
+
+    const handleInputChange = (
+        field: keyof typeof errors, 
+        setter: React.Dispatch<React.SetStateAction<string>>, 
+        setValid: React.Dispatch<React.SetStateAction<boolean>>
+      ) => (
+        event: React.ChangeEvent<HTMLInputElement>
+      ) => {
+        const value = event.target.value;
+        if (/^\d*\.?\d*$/.test(value)) {
+          setter(value);
+          setErrors(prev => ({ ...prev, [field]: false }));
+          setValid(true);
+        } else {
+          setter(value); // Update the value even if it's invalid to show the feedback
+          setErrors(prev => ({ ...prev, [field]: true }));
+          setValid(false);
+        }
+      };
+      
+
+
     const handleSnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSn(event.target.value);
     };
 
-    const handleDbtlengthChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+/*     const handleDbtlengthChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setDbtlength(event.target.value);
     };
 
@@ -75,7 +123,7 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId }) => {
 
     const handleDbtcompStrChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setDbtcompStr(event.target.value);
-    };
+    }; */
 
     const handleSave = async () => {
         if (selectedItemId) {
@@ -130,7 +178,7 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId }) => {
     };
 
 
-    const handleInfoExport = () => {
+    /* const handleInfoExport = () => {
 
         const sensors = data.toolinstalledsensorSet.map(item => ({
             name: item.rToolsensortypeId.name,
@@ -158,7 +206,7 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId }) => {
         link.download = data.sn + ".json";
         link.href = url;
         link.click();
-    };
+    }; */
 
     const handleImageExport = async () => {
         if (img !== undefined) {
@@ -171,8 +219,9 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId }) => {
         }
     };
 
-    if (loading) return console.log("Loading")
-    if (error) return console.log("Error:" + error.message);
+    if (loading) return <div>Loading...</div>;
+    if (error) return <div>Error: {error.message}</div>;
+
 
     const img = "data:image/png;base64," + data.image;
 
@@ -183,6 +232,8 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId }) => {
             input.value = input.defaultValue;
         });
     };
+    
+    
 
     return (
         <div className="display-container">
@@ -193,9 +244,7 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId }) => {
                             <div className="heading-of-param">
                                 <h4 className="heading-of-param">SN :</h4>
                             </div>
-                            {/*<div>*/}
                             <input type="text" defaultValue={data.sn} onChange={handleSnChange} disabled={true} />
-                            {/*</div>*/}
                         </div>
                         <div className="title">
                             <div className="display-content-titles">
@@ -203,17 +252,13 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId }) => {
                                     <div className="heading-of-param">
                                         <h4 className="heading-of-param">Group: </h4>
                                     </div>
-                                    {/*<div>*/}
                                     <input type="text" defaultValue={data.rModuleTypeId.rModulesGroupId.name} disabled={true} />
-                                    {/*</div>*/}
                                 </div>
                                 <div className="title">
                                     <div className="heading-of-param">
                                         <h4 className="heading-of-param">Module Type: </h4>
                                     </div>
-                                    {/*<div>*/}
                                     <input type="text" defaultValue={data.rModuleTypeId.name} disabled={true} />
-                                    {/*</div>*/}
                                 </div>
                             </div>
                         </div>
@@ -221,9 +266,7 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId }) => {
                             <div className="heading-of-param">
                                 <h4 className="heading-of-param">Housing: </h4>
                             </div>
-                            {/*<div>*/}
                             <input type="text" defaultValue={data.rModuleTypeId.rModulesGroupId.name + ":" + data.sn} disabled={true} />
-                            {/*</div>*/}
                         </div>
                     </div>
                     <div className="display-content-info">
@@ -231,38 +274,68 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId }) => {
                             <div className="params">
                                 <h4>Housing Params</h4>
                                 <div className="Housing_params-content">
-                                    <div className="parametr">
+
+                                <div className="parametr">
                                         <p className="title_parametrs">Length* :</p>
-                                        <input className="num_parametrs" defaultValue={Number(data.dbtlength).toFixed(2)} onChange={handleDbtlengthChange} disabled={role == "user"} />
+                                        <input className={`num_parametrs ${dbtlengthValid ? '' : 'invalid'}`} 
+                                            value={dbtlength} 
+                                            onChange={handleInputChange('dbtlength', setDbtlength, setDbtlengthValid)} 
+                                            disabled={role === "user"} 
+                                            />
                                         <p className="unit_parametrs">mm</p>
                                     </div>
+
                                     <div className="parametr">
                                         <p className="title_parametrs">Weight :</p>
-                                        <input className="num_parametrs" defaultValue={Number(data.dbtweight).toFixed(2)} onChange={handleDbtweightChange} disabled={role == "user"} />
+                                        <input className={`num_parametrs ${dbtweightValid ? '' : 'invalid'}`} 
+                                            value={dbtweight} 
+                                            onChange={handleInputChange('dbtweight', setDbtweight, setDbtweightValid)} 
+                                            disabled={role === "user"} 
+                                            />
                                         <p className="unit_parametrs">kg</p>
                                     </div>
+
                                     <div className="parametr">
                                         <p className="title_parametrs">COMP STR :</p>
-                                        <input className="num_parametrs" defaultValue={Number(data.dbtcompStr).toFixed(2)} onChange={handleDbtcompStrChange} disabled={role == "user"} />
+                                        <input className={`num_parametrs ${dbtcompStrValid ? '' : 'invalid'}`} 
+                                            value={dbtcompStr} 
+                                            onChange={handleInputChange('dbtcompStr', setDbtcompStr, setDbtcompStrValid)} 
+                                            disabled={role === "user"} 
+                                            />
                                         <p className="unit_parametrs">kg</p>
                                     </div>
+
                                     <div className="parametr">
                                         <p className="title_parametrs">OD* :</p>
-                                        <input className="num_parametrs" defaultValue={Number(data.dbtmaxOd).toFixed(2)} onChange={handleDbtmaxOdChange} disabled={role == "user"} />
+                                        <input className={`num_parametrs ${dbtmaxOdValid ? '' : 'invalid'}`} 
+                                            value={dbtmaxOd} 
+                                            onChange={handleInputChange('dbtmaxOd', setDbtmaxOd, setDbtmaxOdValid)} 
+                                            disabled={role === "user"} 
+                                            />
                                         <p className="unit_parametrs">mm</p>
                                     </div>
+
                                     <div className="parametr">
                                         <p className="title_parametrs">OD Closed :</p>
-                                        <input className="num_parametrs" defaultValue={Number(data.dbtmaxOdCollapsed).toFixed(2)} onChange={handleDbtmaxOdCollapsedChange} disabled={role == "user"} />
+                                        <input className={`num_parametrs ${dbtmaxOdCollapsedValid ? '' : 'invalid'}`} 
+                                            value={dbtmaxOdCollapsed} 
+                                            onChange={handleInputChange('dbtmaxOdCollapsed', setDbtmaxOdCollapsed, setDbtmaxOdCollapsedValid)} 
+                                            disabled={role === "user"} 
+                                            />
                                         <p className="unit_parametrs">mm</p>
                                     </div>
+
                                     <div className="parametr">
                                         <p className="title_parametrs">OD Opened :</p>
-                                        <input className="num_parametrs" defaultValue={Number(data.dbtmaxOdOpened).toFixed(2)} onChange={handleDbtmaxOdOpenedChange} disabled={role == "user"} />
+                                        <input className={`num_parametrs ${dbtmaxOdOpenedValid ? '' : 'invalid'}`} 
+                                            value={dbtmaxOdOpened} 
+                                            onChange={handleInputChange('dbtmaxOdOpened', setDbtmaxOdOpened, setDbtmaxOdOpenedValid)} 
+                                            disabled={role === "user"} 
+                                            />
                                         <p className="unit_parametrs">mm</p>
                                     </div>
-                                    <div>
 
+                                    <div>
                                     </div>
                                 </div>
                             </div>
@@ -289,7 +362,7 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId }) => {
                         <div className="display-content-info-image">
                             <img src={img} width={"100px"} alt={"alter image description"}/>
                             <div className="info-image-buttons">
-                                <button onClick={handleInfoExport}>Export Info</button>
+{/*                                 <button onClick={handleInfoExport}>Export Info</button>*/}                                
                                 <button onClick={handleImageExport}>Export Image</button>
                                 <button>Import Image</button>
                             </div>
