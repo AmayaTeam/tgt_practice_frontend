@@ -27,7 +27,7 @@ const Header: React.FC<HeaderProps> = ({ selectedUnitId, setSelectedUnitId }) =>
     useEffect(() => {
         if (userData && userData.me) {
             setUsername(userData.me.username);
-            setUserId(userData.me.user_id)
+            setUserId(userData.me.id)
             Cookies.set("role", userData.me.groups[0].name);
         }
     }, [userData]);

@@ -65,35 +65,6 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId, selectedUnitId }) => 
     if (loading) return console.log("Loading")
     if (error) return console.log("Error:" + error.message);
 
-    const handleInfoExport = () => {
-
-        const sensors = data.toolinstalledsensorSet.map(item => ({
-            name: item.rToolsensortypeId.name,
-            recordPoint: item.recordPoint
-          }));
-
-        const toolModuleData = {
-            sn: data.sn,
-            group: data.rModuleTypeId.rModulesGroupId.name,
-            module_type: data.rModuleTypeId.name,
-            housing: data.rModuleTypeId.rModulesGroupId.name + ":" + data.sn,
-            length: Number(data.dbtlength).toFixed(2),
-            weight: Number(data.dbtweight).toFixed(2),
-            COMP_STR: Number(data.dbtcompStr).toFixed(2),
-            OD: Number(data.dbtmaxOd).toFixed(2),
-            OD_Closed: Number(data.dbtmaxOdCollapsed).toFixed(2),
-            OD_Opened: Number(data.dbtmaxOdOpened).toFixed(2),
-            housing_sensors: sensors
-        };
-
-        const fileData = JSON.stringify(toolModuleData);
-        const blob = new Blob([fileData], { type: "text/plain" });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.download = data.sn + ".json";
-        link.href = url;
-        link.click();
-    };
 
     const handleImageExport = async () => {
         if (img !== undefined) {
@@ -194,7 +165,6 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId, selectedUnitId }) => 
                         <div className="display-content-info-image">
                             <img src={img} width={"100px"} alt={"alter image description"} />
                             <div className="info-image-buttons">
-                                <button onClick={handleInfoExport}>Export Info</button>
                                 <button onClick={handleImageExport}>Export Image</button>
                                 <button>Import Image</button>
                             </div>
