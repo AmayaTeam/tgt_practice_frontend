@@ -171,3 +171,46 @@ img{
     width: 50px;
     text-align: right;
 }
+.Housing_params-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+.Housing_params-table input{
+    margin: 0;
+}
+
+.Housing_params-table th, .Housing_params-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.Housing_params-table th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    background-color: #f2f2f2;
+    color: black;
+}
+.Housing_params-table td{
+    padding: 3px;
+}
+
+.Housing_params-table input {
+    width: 100%;
+    border: none;
+    background: transparent;
+    color: black;
+}
+
+.Housing_params-table input:disabled {
+    color: #999;
+}
+
+/*     .Housing_params-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+} */
+
+.Housing_params-table tr:hover {
+    background-color: #f1f1f1;
+}

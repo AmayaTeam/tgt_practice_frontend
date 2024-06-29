@@ -7,6 +7,13 @@ import Modal from "../Modal/Modal.tsx";
 interface DisplayProps {
     selectedItemId: string | null;
 }
+interface Sensor {
+    id: number; // или string, если идентификатор строковый
+    rToolsensortypeId: {
+        name: string;
+    };
+    recordPoint: string;
+}
 
 const Display: React.FC<DisplayProps> = ({ selectedItemId }) => {
     const { loading, error, data } = useToolModuleQuery(selectedItemId);
@@ -42,7 +49,7 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId }) => {
         setShowModal(false);
     };
 
-    const [errors, setErrors] = useState<{
+    /* const [errors, setErrors] = useState<{
         dbtlength: boolean,
         dbtweight: boolean,
         dbtmaxOd: boolean,
@@ -56,7 +63,7 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId }) => {
         dbtmaxOdOpened: false,
         dbtmaxOdCollapsed: false,
         dbtcompStr: false
-    });
+    }); */
 
     const role = Cookies.get('role');
 
@@ -344,22 +351,36 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId }) => {
                             </div>
 
                             <div className="params">
-                                <h4>Housing Sensors</h4>
-                                {data.toolinstalledsensorSet.map((sensor, index) => (
-                                    <div className="Housing_params-content" key={index}>
-                                        <div className="parametr">
-                                            <p className="title_parametrs">Name: </p>
-                                            <input type="text" defaultValue={sensor.rToolsensortypeId.name}
-                                                   disabled={role == "user"}/>
-                                        </div>
-                                        <div className="parametr">
-                                            <p className="title_parametrs">Record Point: </p>
-                                            <input type="text" defaultValue={sensor.recordPoint}
-                                                   disabled={role == "user"}/>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
+                            <h4>Housing Sensors</h4>
+                            <table className="Housing_params-table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Record Point</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {data.toolinstalledsensorSet.map((sensor: Sensor, index: number) => (
+                                        <tr key={index}>
+                                            <td>
+                                                <input
+                                                    type="text"
+                                                    defaultValue={sensor.rToolsensortypeId.name}
+                                                    disabled={role == "user"}
+                                                />
+                                            </td>
+                                            <td>
+                                                <input
+                                                    type="text"
+                                                    defaultValue={sensor.recordPoint}
+                                                    disabled={role == "user"}
+                                                />
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
                         </div>
 
                         <div className="display-content-info-image">
