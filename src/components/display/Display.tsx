@@ -14,11 +14,14 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId, selectedUnitId }) => 
     const { loading, error, data } = useToolModuleQuery({ id: selectedItemId, unitSystem: selectedUnitId });
     const { updateParameter } = useParameterUpdate();
     const [parameters, setParameters] = useState<Record<string, string>>({});
+    const hiddenParameters = ['Image h_y1', 'Image h_y2'];
 
     useEffect(() => {
         if (data && data.parameterSet) {
             const initialParameters = data.parameterSet.reduce((acc: Record<string, string>, param: any) => {
-                acc[param.id] = Number(param.parameterValue).toFixed(2);
+                if (!hiddenParameters.includes(param.parameterType.parameterName)) {
+                    acc[param.id] = Number(param.parameterValue).toFixed(2);
+                }
                 return acc;
             }, {});
             setParameters(initialParameters);
@@ -129,18 +132,20 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId, selectedUnitId }) => 
                             <div className="params">
                                 <h4>Housing Params</h4>
                                 <div className="Housing_params-content">
-                                    {data.parameterSet.map((param) => (
-                                        <div className="parametr" key={param.id}>
-                                            <p className="title_parametrs">{param.parameterType.parameterName}</p>
-                                            <input
-                                                className="num_parametrs"
-                                                value={parameters[param.id] || ""}
-                                                onChange={handleParameterChange(param.id)}
-                                                disabled={role === "user"}
-                                            />
-                                            <p className="unit_parametrs">{param.unit.name.en}</p>
-                                        </div>
-                                    ))}
+                                    {data.parameterSet
+                                        .filter((param: any) => !hiddenParameters.includes(param.parameterType.parameterName)) // фильтруем параметры, которые не должны быть скрыты
+                                        .map((param) => (
+                                            <div className="parametr" key={param.id}>
+                                                <p className="title_parametrs">{param.parameterType.parameterName}</p>
+                                                <input
+                                                    className="num_parametrs"
+                                                    value={parameters[param.id] || ""}
+                                                    onChange={handleParameterChange(param.id)}
+                                                    disabled={role === "user"}
+                                                />
+                                                <p className="unit_parametrs">{param.unit.name.en}</p>
+                                            </div>
+                                        ))}
                                 </div>
                             </div>
 
@@ -150,11 +155,13 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId, selectedUnitId }) => 
                                     <div className="Housing_params-content" key={sensor.id}>
                                         <div className="parametr">
                                             <p className="title_parametrs">Name: </p>
-                                            <input type="text" defaultValue={sensor.rToolsensortype.name} disabled={role === "user"} />
+                                            <input type="text" defaultValue={sensor.rToolsensortype.name}
+                                                   disabled={role === "user"}/>
                                         </div>
                                         <div className="parametr">
                                             <p className="title_parametrs">Record Point: </p>
-                                            <input type="text" defaultValue={sensor.recordPoint} disabled={role === "user"} />
+                                            <input type="text" defaultValue={sensor.recordPoint}
+                                                   disabled={role === "user"}/>
                                         </div>
                                         <p className="unit_parametrs">{sensor.unit.name.en}</p>
                                     </div>
