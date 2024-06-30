@@ -1,5 +1,5 @@
 import { useQuery } from "@apollo/client";
-import ToolModuleGroup from "../../graphql/queries/tool_module_groups";
+import ToolModuleGroup from "src/graphql/queries/tool_module_groups";
 
 
 export const useToolModuleGroup = () => {

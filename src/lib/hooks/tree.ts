@@ -1,5 +1,5 @@
 import { useQuery } from '@apollo/client';
-import TREE_QUERY from "../../graphql/queries/tree";
+import TREE_QUERY from "src/graphql/queries/tree";
 
 const useTreeQuery = () => {
     const { loading, error, data } = useQuery(TREE_QUERY);

@@ -1,5 +1,5 @@
 import { useQuery } from '@apollo/client';
-import ToolModule from "../../graphql/queries/tool_module";
+import ToolModule from "src/graphql/queries/tool_module";
 
 interface UseToolModuleQueryProps {
     id: string | null;

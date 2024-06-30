@@ -78,8 +78,11 @@ const Header: React.FC<HeaderProps> = ({ selectedUnitId, setSelectedUnitId }) =>
     };
 
     const handleLogout = () => {
-        Cookies.remove('role');
-        window.location.href = 'http://localhost:8000/logout_user'; // Redirect to login page
+        Cookies.remove('access_token');
+        Cookies.remove('refresh_token');
+        localStorage.removeItem('jwt_token');
+        localStorage.removeItem('refresh_token');
+        window.location.href = 'http://localhost:8000/logout'; // Redirect to login page
     };
 
     return (

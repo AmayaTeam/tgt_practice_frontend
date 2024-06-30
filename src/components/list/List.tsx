@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './List.css';
-import useTreeQuery from "../../lib/hooks/tree.ts";
-import { ToolModuleGroup, ToolModuleType, ToolModule } from '../../types/interfaces';
+import useTreeQuery from "src/lib/hooks/tree.ts";
+import { ToolModuleGroup, ToolModuleType, ToolModule } from 'src/types/interfaces';
 
 interface ListProps {
     selectedItemId: string | null;
