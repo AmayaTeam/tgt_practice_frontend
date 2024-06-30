@@ -27,7 +27,6 @@ const LogInWindow: React.FC = () => {
                         </div>
                     </Link>
                 </div>
-                <div className="line"></div>
                 <div className="heading">
                     <p>In order to log in to the app, you need to log in with Microsoft.</p>
                 </div>
