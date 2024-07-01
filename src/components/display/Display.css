@@ -1,41 +1,44 @@
 .display-container {
-    display: flex; /* Используем flex-контейнер для размещения компонентов в ряд */
-    justify-content: space-between; /* Равномерно распределяем пространство между компонентами */
-    align-items: flex-start; /* Выравниваем компоненты по верхнему краю */
-    /*margin-left: 100px;*/
+    display: flex; 
+    justify-content: space-between; 
+    align-items: flex-start;
     margin-right: 10%;
     width: 50%;
 }
 input{
     height: 32px;
     border: 0.3px #C5C5C5 solid;
-    transition: border-color 0.3s; /* Добавляем плавный переход для эффекта анимации */
-    outline: none; /* Убираем стандартную рамку фокуса */
+    transition: border-color 0.3s; 
+    outline: none; 
     font-size: 16px;
 }
+.num_parametrs.invalid {
+    border: 1px solid red;
+}
+
 p{
     font-size: 16px;
 }
 .container {
     display: flex;
-    justify-content: space-between; /* Выравниваем по центру по горизонтали */
-    align-items: flex-start; /* Выравниваем по верхнему краю по вертикали */
+    justify-content: space-between; 
+    align-items: flex-start; 
 }
 
 .display {
     width: 100%;
     height: auto;
     background-color: white;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Тень для эффекта поднятости */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); 
     padding: 20px;
-    margin-left: 20px; /* Добавляем отступ слева */
-    margin-top: 85px; /* Добавляем отступ сверху, чтобы выровнять по вертикали с контейнером */
+    margin-left: 20px; 
+    margin-top: 85px; 
 }
 
 .display-content{
     display: flex;
-    flex-direction: column; /* Элементы располагаются в столбец */
-    align-items: flex-start; /* Элементы выравниваются по верхнему краю контейнера */
+    flex-direction: column; 
+    align-items: flex-start; 
     height: auto;
     width: 100%;
 }
@@ -48,14 +51,14 @@ p{
     text-align: left;
 }
 .Housing_params-content {
-    column-count: 2; /* Разбиваем контент на две колонки */
-    column-gap: 40px; /* Добавляем промежуток между колонками */
+    column-count: 2; 
+    column-gap: 40px; 
     column-width: 250px;
     width: 100%;
 }
 .display-content-title {
     /*flex-direction: column;*/
-    width: 100%; /* Занимает всю доступную ширину родителя */
+    width: 100%;
 }
 
 .display-content-titles {
@@ -73,7 +76,7 @@ p{
 }
 
 .title {
-    width: 100%; /* Занимает всю доступную ширину родителя */
+    width: 100%; 
     display: flex;
     align-items: center;
     text-align: left;
@@ -81,7 +84,7 @@ p{
 }
 
 .title input {
-    width: 100%; /* Расширяется на всю ширину родителя */
+    width: 100%; 
 
 }
 .display-content-info{
@@ -122,25 +125,24 @@ p{
 }
 .info-image-buttons {
     display: flex;
-    flex-direction: column; /* Элементы располагаются в столбец */
-    margin-left: 20px; /* Добавляем отступ слева */
+    flex-direction: column;
+    margin-left: 20px; 
 }
 .info-image-buttons button + button {
-    margin-top: 20px; /* Добавляем отступ сверху для второй кнопки */
+    margin-top: 20px; 
 }
 button {
-    background-color: #D9D9D9; /* Цвет фона */
-    border: 0.3px solid #AAAAAA; /* Цвет рамки и её ширина */
-    margin-top: 20px; /* Отступ между кнопками */
-    /*padding: 5px 10px; !* Внутренний отступ кнопки *!*/
-    cursor: pointer; /* Показываем, что кнопка кликабельна */
+    background-color: #D9D9D9; 
+    border: 0.3px solid #AAAAAA; 
+    margin-top: 20px;
+    cursor: pointer; 
     transition: background-color 0.3s, border-color 0.3s; /* Плавный переход цветов */
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Тень для эффекта поднятости */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); 
     width: 89px;
     height: 32px;
 }
 img{
-    border: 0.3px solid #AAAAAA; /* Цвет рамки и её ширина */
+    border: 0.3px solid #AAAAAA; 
 
 }
 .display-content-buttons {
@@ -148,11 +150,11 @@ img{
     margin-top: 20px;
     align-items: center;
     display: flex;
-    justify-content: center; /* Выравниваем элементы по центру по горизонтали */
+    justify-content: center; 
 }
 
 .display-content-buttons button {
-    margin: 0 10px; /* Расстояние между кнопками */
+    margin: 0 10px; 
 }
 .num_parametrs{
     width: 80px;
@@ -168,4 +170,47 @@ img{
 .unit_parametrs{
     width: 50px;
     text-align: right;
+}
+.Housing_params-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+.Housing_params-table input{
+    margin: 0;
+}
+
+.Housing_params-table th, .Housing_params-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.Housing_params-table th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    background-color: #f2f2f2;
+    color: black;
+}
+.Housing_params-table td{
+    padding: 3px;
+}
+
+.Housing_params-table input {
+    width: 100%;
+    border: none;
+    background: transparent;
+    color: black;
+}
+
+.Housing_params-table input:disabled {
+    color: #999;
+}
+
+/*     .Housing_params-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+} */
+
+.Housing_params-table tr:hover {
+    background-color: #f1f1f1;
 }

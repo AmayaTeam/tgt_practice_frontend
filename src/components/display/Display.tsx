@@ -3,10 +3,17 @@ import "./Display.css";
 import useToolModuleQuery from "../../lib/hooks/tool_module.ts";
 import { useParameterUpdate } from "../../lib/hooks/ToolModule/useParameterUpdate.ts";
 import Cookies from 'js-cookie';
-
+import Modal from "../Modal/Modal.tsx";
 interface DisplayProps {
     selectedItemId: string | null;
     selectedUnitId: string;
+}
+interface Sensor {
+    id: number; // или string, если идентификатор строковый
+    rToolsensortypeId: {
+        name: string;
+    };
+    recordPoint: string;
 }
 
 const Display: React.FC<DisplayProps> = ({ selectedItemId, selectedUnitId }) => {
@@ -15,6 +22,8 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId, selectedUnitId }) => 
     const { updateParameter } = useParameterUpdate();
     const [parameters, setParameters] = useState<Record<string, string>>({});
     const hiddenParameters = ['Image h_y1', 'Image h_y2'];
+    const [showModal, setShowModal] = useState<boolean>(false);
+    const [modalMessage, setModalMessage] = useState<string>("");
 
     useEffect(() => {
         if (data && data.parameterSet) {
@@ -29,10 +38,15 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId, selectedUnitId }) => 
     }, [data]);
 
     const handleParameterChange = (paramId: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
-        setParameters((prevParameters) => ({
-            ...prevParameters,
-            [paramId]: event.target.value,
-        }));
+        const { value } = event.target;
+        const regex = /^\d*\.?\d*$/;
+
+        if (regex.test(value)) {
+            setParameters((prevParameters) => ({
+                ...prevParameters,
+                [paramId]: value,
+            }));
+        }
     };
     const handleSave = async () => {
         if (selectedItemId && data && data.parameterSet) {
@@ -57,9 +71,11 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId, selectedUnitId }) => 
                             }
                         });
                     }
-                    alert('Update successful');
+                    setShowModal(true);
+                    setModalMessage("Update successful!");
                 } catch (error) {
-                    console.error("Error updating parameters:", error);
+                    setShowModal(true);
+                    setModalMessage("The entered values have the wrong data type, the data will not be saved.");
                 }
             }
         }
@@ -91,6 +107,10 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId, selectedUnitId }) => 
         inputs.forEach((input: HTMLInputElement) => {
             input.value = input.defaultValue;
         });
+    };
+
+    const closeModal = () => {
+        setShowModal(false);
     };
 
     return (
@@ -185,6 +205,7 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId, selectedUnitId }) => 
                     ) : null}
                 </div>
             </div>
+            {showModal && <Modal onClose={closeModal} message={modalMessage} />}
         </div>
     );
 };
