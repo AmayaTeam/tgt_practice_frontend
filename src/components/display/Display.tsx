@@ -46,6 +46,7 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId, selectedUnitId }) => 
                 ...prevParameters,
                 [paramId]: value,
             }));
+        } else {
         }
     };
     const handleSave = async () => {
@@ -169,24 +170,38 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId, selectedUnitId }) => 
                                 </div>
                             </div>
 
-                            <div className="params">
-                                <h4>Housing Sensors</h4>
-                                {data.toolinstalledsensorSet.map((sensor) => (
-                                    <div className="Housing_params-content" key={sensor.id}>
-                                        <div className="parametr">
-                                            <p className="title_parametrs">Name: </p>
-                                            <input type="text" defaultValue={sensor.rToolsensortype.name}
-                                                   disabled={role === "user"}/>
-                                        </div>
-                                        <div className="parametr">
-                                            <p className="title_parametrs">Record Point: </p>
-                                            <input type="text" defaultValue={sensor.recordPoint}
-                                                   disabled={role === "user"}/>
-                                        </div>
-                                        <p className="unit_parametrs">{sensor.unit.name.en}</p>
-                                    </div>
-                                ))}
-                            </div>
+                        <div className="params">
+                            <h4>Housing Sensors</h4>
+                            <table className="Housing_params-table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Record Point</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {data.toolinstalledsensorSet.map((sensor, index: number) => (
+                                        <tr key={index}>
+                                            <td>
+                                                <input
+                                                    type="text"
+                                                    defaultValue={sensor.rToolsensortype.name}
+                                                    disabled={role == "user"}
+                                                />
+                                            </td>
+                                            <td>
+                                                <input
+                                                    type="text"
+                                                    defaultValue={sensor.recordPoint}
+                                                    disabled={role == "user"}
+                                                />
+                                                {sensor.unit.name.en}
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
                         </div>
 
                         <div className="display-content-info-image">
