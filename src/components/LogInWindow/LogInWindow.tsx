@@ -6,7 +6,7 @@ const LogInWindow: React.FC = () => {
 
     // useEffect(() => {
     //     const fetchLoginUrl = async () => {
-    //         window.location.href = "http://localhost:8000/login";
+    //         window.location.href = "http://172.20.10.6:8000/login";
     //     };
     //     fetchLoginUrl();
     // }, []);
@@ -18,7 +18,7 @@ const LogInWindow: React.FC = () => {
                     <h1>Log In</h1>
                 </div>
                 <div className="login-button">
-                    <Link to="http://localhost:8000/login" className="button-content" style={{textDecoration: 'none'}}>
+                    <Link to="http://172.20.10.6:8000/login" className="button-content" style={{textDecoration: 'none'}}>
                         <div className="button-icon">
                             <img src="/src/assets/MicrosoftLogo.png" alt="Microsoft Logo" />
                         </div>
