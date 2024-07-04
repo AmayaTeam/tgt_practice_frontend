@@ -23,6 +23,20 @@ const List: React.FC<ListProps> = ({ selectedItemId, onItemClick }) => {
         }
     }, [data, selectedSort]);
 
+    useEffect(() => {
+        if (data) {
+            setSortedData(
+                sortData(data.toolModuleGroups, selectedSort).filter((group) =>
+                    group.name.toLowerCase().includes(searchText.toLowerCase()) ||
+                    group.toolmoduletypeSet.some(type =>
+                        type.name.toLowerCase().includes(searchText.toLowerCase()) ||
+                        type.toolmoduleSet?.some(module => module.sn.toLowerCase().includes(searchText.toLowerCase()))
+                    )
+                )
+            );
+        }
+    }, [data, selectedSort, searchText]);
+
     const handleItemClick = (level: string, id: string) => {
         console.log(level, id);
         switch (level) {
@@ -54,10 +68,6 @@ const List: React.FC<ListProps> = ({ selectedItemId, onItemClick }) => {
         setSelectedSort(value);
     };
 
-    const handleSearch = () => {
-        // Обработка поиска
-    };
-
     const sortData = (data: ToolModuleGroup[], sortBy: string) => {
         if (sortBy === 'novelty') {
             return [...data].sort((a, b) => {
@@ -71,8 +81,8 @@ const List: React.FC<ListProps> = ({ selectedItemId, onItemClick }) => {
         return data;
     };
 
-    if (loading) return console.log(loading);
-    if (error) return console.log(error);
+    if (loading) return <div>Loading...</div>;
+    if (error) return <div>Error: {error.message}</div>;
 
     return (
         <div className="list-container">
@@ -84,7 +94,6 @@ const List: React.FC<ListProps> = ({ selectedItemId, onItemClick }) => {
                     placeholder="Enter..."
                     className="search-input"
                 />
-                <button onClick={handleSearch} className="search-button"><p>SEARCH</p></button>
             </div>
             <div className="sort">
                 <div className="sort-label">
@@ -116,6 +125,9 @@ const List: React.FC<ListProps> = ({ selectedItemId, onItemClick }) => {
                 </div>
             </div>
             <div className="list">
+            {sortedData.length === 0 ? (
+                    <div className="not-found">No data found.</div>
+                ) : (
                 <ul className="level1">
                     {sortedData.map((group: ToolModuleGroup) => {
                         if (!group.name) return null;
@@ -143,19 +155,20 @@ const List: React.FC<ListProps> = ({ selectedItemId, onItemClick }) => {
                                                                     className={selectedLevel3 === module.id ? 'selected' : ''}
                                                                 >
                                                                     {module.sn}
-                                                                </li>
-                                                            ))}
-                                                        </ul>
-                                                    )}
-                                                </li>
-                                            );
-                                        })}
-                                    </ul>
-                                )}
-                            </li>
-                        );
-                    })}
-                </ul>
+                                                                    </li>
+                                                                ))}
+                                                            </ul>
+                                                        )}
+                                                    </li>
+                                                );
+                                            })}
+                                        </ul>
+                                    )}
+                                </li>
+                            );
+                        })}
+                    </ul>
+                )}
             </div>
         </div>
     );
