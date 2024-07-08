@@ -8,11 +8,10 @@ import { useUserUnitSystemQuery } from '../../lib/hooks/useUserUnitSystemQuery';
 import { useUpdateProfileUnitSystem } from '../../lib/hooks/UnitSystem/useUpdateProfileUnitSystem';
 
 interface HeaderProps {
-    selectedUnitId: string;
     setSelectedUnitId: React.Dispatch<React.SetStateAction<string>>;
 }
 
-const Header: React.FC<HeaderProps> = ({ selectedUnitId, setSelectedUnitId }) => {
+const Header: React.FC<HeaderProps> = ({ setSelectedUnitId }) => {
     const [isUnitDropdownOpen, setIsUnitDropdownOpen] = useState(false);
     const [isUsernameDropdownOpen, setIsUsernameDropdownOpen] = useState(false);
     const [username, setUsername] = useState('');

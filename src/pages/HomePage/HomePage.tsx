@@ -24,7 +24,7 @@ const HomePage: React.FC = () => {
 
     return (
         <div className="container">
-            <Header selectedUnitId={selectedUnitId} setSelectedUnitId={setSelectedUnitId} />
+            <Header setSelectedUnitId={setSelectedUnitId} />
             <List selectedItemId={selectedItemId} onItemClick={handleItemClick} />
             <Display selectedItemId={selectedItemId} selectedUnitId={selectedUnitId} />
         </div>

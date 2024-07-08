@@ -4,10 +4,11 @@ import useToolModuleQuery from "../../lib/hooks/tool_module.ts";
 import { useParameterUpdate } from "../../lib/hooks/ToolModule/useParameterUpdate.ts";
 import Cookies from 'js-cookie';
 import Modal from "../Modal/Modal.tsx";
-import HousingParams from "./housingParams/housingParams.tsx";
-import DisplayHeader from "./displayHeader/displayHeader.tsx";
-import HousingSensors from "./housingSensors/housingSensors.tsx";
-import ImageSection from "./imageSection/imageSection.tsx";
+import HousingParams from "./displayComponents/housingParams.tsx";
+import DisplayHeader from "./displayComponents/displayHeader.tsx";
+import HousingSensors from "./displayComponents/housingSensors.tsx";
+import ImageSection from "./displayComponents/imageSection.tsx";
+import ControlButtons from "./displayComponents/controlButtons.tsx";
 
 
 interface DisplayProps {
@@ -47,6 +48,7 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId, selectedUnitId }) => 
             }));
         }
     };
+
     const handleSave = async () => {
         if (selectedItemId && data && data.parameterSet) {
             const updatedParameters = Object.entries(parameters).reduce((acc, [paramId, value]) => {
@@ -58,7 +60,6 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId, selectedUnitId }) => 
             }, [] as { id: string; parameterValue: number }[]);
 
             if (updatedParameters.length > 0) {
-                console.log("Updating parameters:", updatedParameters);
                 try {
                     for (const param of updatedParameters) {
                         await updateParameter({
@@ -80,9 +81,13 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId, selectedUnitId }) => 
         }
     };
 
-    if (loading) return console.log("Loading")
-    if (error) return console.log("Error:" + error.message);
-    
+    if (loading) return <div>Loading...</div>;
+
+    if (error) {
+        console.log(error);
+        return <div>Internal error occurred</div>;;
+    }
+
     const img = "data:image/png;base64," + data.image;
     const role = Cookies.get('role');
 
@@ -129,12 +134,12 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId, selectedUnitId }) => 
                             sn={data.sn}
                         />
                     </div>
-                    {role == 'manager' ? (
-                        <div className="display-content-buttons">
-                            <button onClick={handleSave}>Save</button>
-                            <button onClick={handleUndoChanges}>Undo Changes</button>
-                        </div>
-                    ) : null}
+
+                    <ControlButtons
+                        handleSave={handleSave}
+                        handleUndoChanges={handleUndoChanges}
+                        role={role}
+                    />
                 </div>
             </div>
             {showModal && <Modal onClose={closeModal} message={modalMessage} />}
