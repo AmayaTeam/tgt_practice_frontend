@@ -4,23 +4,26 @@ import useToolModuleQuery from "../../lib/hooks/tool_module.ts";
 import { useParameterUpdate } from "../../lib/hooks/ToolModule/useParameterUpdate.ts";
 import Cookies from 'js-cookie';
 import Modal from "../Modal/Modal.tsx";
+
 interface DisplayProps {
     selectedItemId: string | null;
     selectedUnitId: string;
 }
+
 interface Sensor {
     id: number; // или string, если идентификатор строковый
-    rToolsensortypeId: {
+    ToolsensortypeId: {
         name: string;
     };
     recordPoint: string;
 }
 
 const Display: React.FC<DisplayProps> = ({ selectedItemId, selectedUnitId }) => {
-    console.log("Параметры запроса", selectedItemId, selectedUnitId)
+    console.log("Параметры запроса", selectedItemId, selectedUnitId);
     const { loading, error, data } = useToolModuleQuery({ id: selectedItemId, unitSystem: selectedUnitId });
     const { updateParameter } = useParameterUpdate();
     const [parameters, setParameters] = useState<Record<string, string>>({});
+    const [invalidParameters, setInvalidParameters] = useState<Record<string, boolean>>({});
     const hiddenParameters = ['Image h_y1', 'Image h_y2'];
     const [showModal, setShowModal] = useState<boolean>(false);
     const [modalMessage, setModalMessage] = useState<string>("");
@@ -29,7 +32,7 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId, selectedUnitId }) => 
         if (data && data.parameterSet) {
             const initialParameters = data.parameterSet.reduce((acc: Record<string, string>, param: any) => {
                 if (!hiddenParameters.includes(param.parameterType.parameterName)) {
-                    acc[param.id] = Number(param.parameterValue).toFixed(2);
+                    acc[param.id] = param.parameterValue.toFixed(2);
                 }
                 return acc;
             }, {});
@@ -41,15 +44,33 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId, selectedUnitId }) => 
         const { value } = event.target;
         const regex = /^\d*\.?\d*$/;
 
+        setParameters((prevParameters) => ({
+            ...prevParameters,
+            [paramId]: value,
+        }));
+
         if (regex.test(value)) {
-            setParameters((prevParameters) => ({
-                ...prevParameters,
-                [paramId]: value,
+            setInvalidParameters((prevInvalid) => ({
+                ...prevInvalid,
+                [paramId]: false,
             }));
         } else {
+            setInvalidParameters((prevInvalid) => ({
+                ...prevInvalid,
+                [paramId]: true,
+            }));
         }
     };
+
     const handleSave = async () => {
+        const hasInvalidInputs = Object.values(invalidParameters).some((isInvalid) => isInvalid);
+
+        if (hasInvalidInputs) {
+            setShowModal(true);
+            setModalMessage("The entered values have the wrong data type, the data will not be saved.");
+            return;
+        }
+
         if (selectedItemId && data && data.parameterSet) {
             const updatedParameters = Object.entries(parameters).reduce((acc, [paramId, value]) => {
                 const originalParam = data.parameterSet.find((param: any) => param.id === paramId);
@@ -60,7 +81,7 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId, selectedUnitId }) => 
             }, [] as { id: string; parameterValue: number }[]);
 
             if (updatedParameters.length > 0) {
-                console.log("Updating parameters:", updatedParameters);
+                console.log("Обновление параметров:", updatedParameters);
                 try {
                     for (const param of updatedParameters) {
                         await updateParameter({
@@ -73,18 +94,17 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId, selectedUnitId }) => 
                         });
                     }
                     setShowModal(true);
-                    setModalMessage("Update successful!");
+                    setModalMessage("The update was successful!");
                 } catch (error) {
                     setShowModal(true);
-                    setModalMessage("The entered values have the wrong data type, the data will not be saved.");
+                    setModalMessage("An error occurred while saving the data.");
                 }
             }
         }
     };
 
-    if (loading) return console.log("Loading")
-    if (error) return console.log("Error:" + error.message);
-
+    if (loading) return console.log("Загрузка");
+    if (error) return console.log("Ошибка:" + error.message);
 
     const handleImageExport = async () => {
         if (img !== undefined) {
@@ -97,9 +117,6 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId, selectedUnitId }) => 
         }
     };
 
-    if (loading) return console.log("Loading")
-    if (error) return console.log("Error:" + error.message);
-
     const img = "data:image/png;base64," + data.image;
     const role = Cookies.get('role');
 
@@ -108,6 +125,7 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId, selectedUnitId }) => 
         inputs.forEach((input: HTMLInputElement) => {
             input.value = input.defaultValue;
         });
+        setInvalidParameters({});
     };
 
     const closeModal = () => {
@@ -159,7 +177,7 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId, selectedUnitId }) => 
                                             <div className="parametr" key={param.id}>
                                                 <p className="title_parametrs">{param.parameterType.parameterName}</p>
                                                 <input
-                                                    className="num_parametrs"
+                                                    className={`num_parametrs ${invalidParameters[param.id] ? 'invalid' : ''}`}
                                                     value={parameters[param.id] || ""}
                                                     onChange={handleParameterChange(param.id)}
                                                     disabled={role === "user"}
