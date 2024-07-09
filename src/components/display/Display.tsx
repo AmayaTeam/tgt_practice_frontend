@@ -8,6 +8,49 @@ interface DisplayProps {
     selectedItemId: string | null;
     selectedUnitId: string;
 }
+interface DisplayProps {
+    selectedItemId: string | null;
+    selectedUnitId: string;
+}
+
+interface Parameter {
+    id: string;
+    parameterType: {
+        parameterName: string;
+    };
+    parameterValue: number;
+    unit: {
+        name: {
+            en: string;
+        };
+    };
+}
+
+interface Sensor {
+    id: number; // или string, если идентификатор строковый
+    rToolsensortype: {
+        name: string;
+    };
+    recordPoint: string;
+    unit: {
+        name: {
+            en: string;
+        };
+    };
+}
+
+interface Data {
+    sn: string;
+    rModuleType: {
+        name: string;
+        rModulesGroup: {
+            name: string;
+        };
+    };
+    parameterSet: Parameter[];
+    toolinstalledsensorSet: Sensor[];
+    image: string;
+}
 interface Sensor {
     id: number; // или string, если идентификатор строковый
     rToolsensortypeId: {
@@ -27,12 +70,13 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId, selectedUnitId }) => 
 
     useEffect(() => {
         if (data && data.parameterSet) {
-            const initialParameters = data.parameterSet.reduce((acc: Record<string, string>, param: any) => {
+            const initialParameters = data.parameterSet.reduce((acc: Record<string, string>, param: Parameter) => {
                 if (!hiddenParameters.includes(param.parameterType.parameterName)) {
-                    acc[param.id] = Number(param.parameterValue).toFixed(2);
+                    acc[param.id] = param.parameterValue.toFixed(2);
                 }
                 return acc;
             }, {});
+            
             setParameters(initialParameters);
         }
     }, [data]);
@@ -52,7 +96,7 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId, selectedUnitId }) => 
     const handleSave = async () => {
         if (selectedItemId && data && data.parameterSet) {
             const updatedParameters = Object.entries(parameters).reduce((acc, [paramId, value]) => {
-                const originalParam = data.parameterSet.find((param: any) => param.id === paramId);
+                const originalParam = data.parameterSet.find((param: Parameter) => param.id === paramId);
                 if (originalParam && originalParam.parameterValue.toFixed(2) !== value) {
                     acc.push({ id: paramId, parameterValue: parseFloat(value) });
                 }
@@ -113,6 +157,8 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId, selectedUnitId }) => 
     const closeModal = () => {
         setShowModal(false);
     };
+//the unit of measurement of the first sensor will be displayed
+const unit = data.toolinstalledsensorSet.length > 0 ? data.toolinstalledsensorSet[0].unit.name.en : "unit";
 
     return (
         <div className="display-container">
@@ -153,50 +199,51 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId, selectedUnitId }) => 
                             <div className="params">
                                 <h4>Housing Params</h4>
                                 <div className="Housing_params-content">
-                                    {data.parameterSet
-                                        .filter((param: any) => !hiddenParameters.includes(param.parameterType.parameterName)) // фильтруем параметры, которые не должны быть скрыты
-                                        .map((param) => (
-                                            <div className="parametr" key={param.id}>
-                                                <p className="title_parametrs">{param.parameterType.parameterName}</p>
-                                                <input
-                                                    className="num_parametrs"
-                                                    value={parameters[param.id] || ""}
-                                                    onChange={handleParameterChange(param.id)}
-                                                    disabled={role === "user"}
-                                                />
-                                                <p className="unit_parametrs">{param.unit.name.en}</p>
-                                            </div>
-                                        ))}
+                                {data.parameterSet
+                                    .filter((param: Parameter) => !hiddenParameters.includes(param.parameterType.parameterName)) // фильтруем параметры, которые не должны быть скрыты
+                                    .map((param: Parameter) => (
+                                        <div className="parametr" key={param.id}>
+                                            <p className="title_parametrs">{param.parameterType.parameterName}</p>
+                                            <input
+                                                className="num_parametrs"
+                                                value={parameters[param.id] || ""}
+                                                onChange={handleParameterChange(param.id)}
+                                                disabled={role === "user"}
+                                            />
+                                            <p className="unit_parametrs">{param.unit.name.en}</p>
+                                        </div>
+                                    ))}
+
                                 </div>
                             </div>
 
-                        <div className="params">
+                            <div className="params">
                             <h4>Housing Sensors</h4>
                             <table className="Housing_params-table">
                                 <thead>
                                     <tr>
                                         <th>Name</th>
-                                        <th>Record Point</th>
+                                        <th>Record Point, {unit}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {data.toolinstalledsensorSet.map((sensor, index: number) => (
+                                    {data.toolinstalledsensorSet.map((sensor: Sensor, index: number) => (
                                         <tr key={index}>
                                             <td>
                                                 <input
                                                     type="text"
                                                     defaultValue={sensor.rToolsensortype.name}
-                                                    disabled={role == "user"}
+                                                    disabled={role === "user"}
                                                 />
                                             </td>
                                             <td>
                                                 <input
                                                     type="text"
                                                     defaultValue={sensor.recordPoint}
-                                                    disabled={role == "user"}
+                                                    disabled={role === "user"}
                                                 />
-                                                {sensor.unit.name.en}
-                                            </td>
+{/*                                                 {sensor.unit.name.en}
+ */}                                            </td>
                                         </tr>
                                     ))}
                                 </tbody>
