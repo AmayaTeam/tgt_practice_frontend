@@ -7,11 +7,8 @@ interface LevelListProps {
 }
 
 const LevelList: React.FC<LevelListProps> = ({ sortedData, onItemClick }) => {
-    console.log(sortedData);
-
-    const [expandedItems, setExpandedItems] = useState<{
-        [key: string]: boolean;
-    }>({});
+    const [expandedItems, setExpandedItems] = useState<{ [key: string]: boolean }>({});
+    const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
 
     const handleToggle = (id: string) => {
         setExpandedItems((prev) => ({
@@ -20,25 +17,33 @@ const LevelList: React.FC<LevelListProps> = ({ sortedData, onItemClick }) => {
         }));
     };
 
+    const handleClick = (id: string) => {
+        setSelectedItemId(id);
+        onItemClick(id);
+    };
+
     return (
         <div>
             {sortedData.map((dataObj) => (
-                <div key={dataObj.id} >
-                    <h2 onClick={() => handleToggle(dataObj.id)} style={{ cursor: 'pointer' }}>
+                <div key={dataObj.id} className="level1">
+                    <p onClick={() => handleToggle(dataObj.id)}>
                         {dataObj.name}
-                    </h2>
+                    </p>
                     {expandedItems[dataObj.id] && (
-                        <div>
+                        <div className="level2">
                             {dataObj.toolmoduletypeSet.map((toolModuleType) => (
                                 <div key={toolModuleType.id}>
-                                    <h3 onClick={() => handleToggle(toolModuleType.id)}>
+                                    <p onClick={() => handleToggle(toolModuleType.id)}>
                                         {toolModuleType.name}
-                                    </h3>
+                                    </p>
                                     {expandedItems[toolModuleType.id] && (
-                                        <div className='level3'>
+                                        <div className="level3">
                                             {toolModuleType.toolmoduleSet.map((toolModule) => (
                                                 <div key={toolModule.id}>
-                                                    <p onClick={() => onItemClick(toolModule.id)} style={{ cursor: 'pointer' }}>
+                                                    <p
+                                                        onClick={() => handleClick(toolModule.id)}
+                                                        className={selectedItemId === toolModule.id ? 'selected' : ''}
+                                                    >
                                                         {toolModule.sn}
                                                     </p>
                                                 </div>
