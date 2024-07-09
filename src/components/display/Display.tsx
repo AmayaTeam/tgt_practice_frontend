@@ -10,12 +10,30 @@ interface DisplayProps {
     selectedUnitId: string;
 }
 
+interface Parameter {
+    id: string;
+    parameterType: {
+        parameterName: string;
+    };
+    parameterValue: number;
+    unit: {
+        name: {
+            en: string;
+        };
+    };
+}
+
 interface Sensor {
-    id: number; // или string, если идентификатор строковый
-    ToolsensortypeId: {
+    id: string;
+    rToolsensortype: {
         name: string;
     };
     recordPoint: string;
+    unit: {
+        name: {
+            en: string;
+        };
+    };
 }
 
 const Display: React.FC<DisplayProps> = ({ selectedItemId, selectedUnitId }) => {
@@ -23,6 +41,7 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId, selectedUnitId }) => 
     const { loading, error, data } = useToolModuleQuery({ id: selectedItemId, unitSystem: selectedUnitId });
     const { updateParameter } = useParameterUpdate();
     const [parameters, setParameters] = useState<Record<string, string>>({});
+    const [sensorRecordPoints, setSensorRecordPoints] = useState<Record<string, string>>({});
     const [invalidParameters, setInvalidParameters] = useState<Record<string, boolean>>({});
     const hiddenParameters = ['Image h_y1', 'Image h_y2'];
     const [showModal, setShowModal] = useState<boolean>(false);
@@ -30,13 +49,21 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId, selectedUnitId }) => 
 
     useEffect(() => {
         if (data && data.parameterSet) {
-            const initialParameters = data.parameterSet.reduce((acc: Record<string, string>, param: any) => {
+            const initialParameters = data.parameterSet.reduce((acc: Record<string, string>, param: Parameter) => {
                 if (!hiddenParameters.includes(param.parameterType.parameterName)) {
                     acc[param.id] = param.parameterValue.toFixed(2);
                 }
                 return acc;
             }, {});
             setParameters(initialParameters);
+        }
+
+        if (data && data.toolinstalledsensorSet) {
+            const initialSensors = data.toolinstalledsensorSet.reduce((acc: Record<string, string>, sensor: Sensor) => {
+                acc[sensor.id] = sensor.recordPoint;
+                return acc;
+            }, {});
+            setSensorRecordPoints(initialSensors);
         }
     }, [data]);
 
@@ -62,6 +89,28 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId, selectedUnitId }) => 
         }
     };
 
+    const handleSensorRecordPointChange = (sensorId: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
+        const { value } = event.target;
+        const regex = /^\d*\.?\d*$/;
+
+        setSensorRecordPoints((prevRecordPoints) => ({
+            ...prevRecordPoints,
+            [sensorId]: value,
+        }));
+
+        if (regex.test(value)) {
+            setInvalidParameters((prevInvalid) => ({
+                ...prevInvalid,
+                [sensorId]: false,
+            }));
+        } else {
+            setInvalidParameters((prevInvalid) => ({
+                ...prevInvalid,
+                [sensorId]: true,
+            }));
+        }
+    };
+
     const handleSave = async () => {
         const hasInvalidInputs = Object.values(invalidParameters).some((isInvalid) => isInvalid);
 
@@ -73,15 +122,24 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId, selectedUnitId }) => 
 
         if (selectedItemId && data && data.parameterSet) {
             const updatedParameters = Object.entries(parameters).reduce((acc, [paramId, value]) => {
-                const originalParam = data.parameterSet.find((param: any) => param.id === paramId);
+                const originalParam = data.parameterSet.find((param: Parameter) => param.id === paramId);
                 if (originalParam && originalParam.parameterValue.toFixed(2) !== value) {
                     acc.push({ id: paramId, parameterValue: parseFloat(value) });
                 }
                 return acc;
             }, [] as { id: string; parameterValue: number }[]);
 
-            if (updatedParameters.length > 0) {
+            const updatedSensors = Object.entries(sensorRecordPoints).reduce((acc, [sensorId, value]) => {
+                const originalSensor = data.toolinstalledsensorSet.find((sensor: Sensor) => sensor.id === sensorId);
+                if (originalSensor && originalSensor.recordPoint !== value) {
+                    acc.push({ id: sensorId, recordPoint: value });
+                }
+                return acc;
+            }, [] as { id: string; recordPoint: string }[]);
+
+            if (updatedParameters.length > 0 || updatedSensors.length > 0) {
                 console.log("Обновление параметров:", updatedParameters);
+                console.log("Обновление сенсоров:", updatedSensors);
                 try {
                     for (const param of updatedParameters) {
                         await updateParameter({
@@ -92,6 +150,17 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId, selectedUnitId }) => 
                                 }
                             }
                         });
+                    }
+                    for (const sensor of updatedSensors) {
+                        // Здесь должна быть ваша функция для обновления сенсоров
+                        // await updateSensor({
+                        //     variables: {
+                        //         input: {
+                        //             id: sensor.id,
+                        //             recordPoint: sensor.recordPoint
+                        //         }
+                        //     }
+                        // });
                     }
                     setShowModal(true);
                     setModalMessage("The update was successful!");
@@ -172,7 +241,7 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId, selectedUnitId }) => 
                                 <h4>Housing Params</h4>
                                 <div className="Housing_params-content">
                                     {data.parameterSet
-                                        .filter((param: any) => !hiddenParameters.includes(param.parameterType.parameterName)) // фильтруем параметры, которые не должны быть скрыты
+                                        .filter((param: Parameter) => !hiddenParameters.includes(param.parameterType.parameterName)) 
                                         .map((param) => (
                                             <div className="parametr" key={param.id}>
                                                 <p className="title_parametrs">{param.parameterType.parameterName}</p>
@@ -188,38 +257,40 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId, selectedUnitId }) => 
                                 </div>
                             </div>
 
-                        <div className="params">
-                            <h4>Housing Sensors</h4>
-                            <table className="Housing_params-table">
-                                <thead>
-                                    <tr>
-                                        <th>Name</th>
-                                        <th>Record Point</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {data.toolinstalledsensorSet.map((sensor, index: number) => (
-                                        <tr key={index}>
-                                            <td>
-                                                <input
-                                                    type="text"
-                                                    defaultValue={sensor.rToolsensortype.name}
-                                                    disabled={role == "user"}
-                                                />
-                                            </td>
-                                            <td>
-                                                <input
-                                                    type="text"
-                                                    defaultValue={sensor.recordPoint}
-                                                    disabled={role == "user"}
-                                                />
-                                                {sensor.unit.name.en}
-                                            </td>
+                            <div className="params">
+                                <h4>Housing Sensors</h4>
+                                <table className="Housing_params-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Record Point</th>
                                         </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
+                                    </thead>
+                                    <tbody>
+                                        {data.toolinstalledsensorSet.map((sensor: Sensor) => (
+                                            <tr key={sensor.id}>
+                                                <td>
+                                                    <input
+                                                        type="text"
+                                                        defaultValue={sensor.rToolsensortype.name}
+                                                        disabled={role === "user"}
+                                                    />
+                                                </td>
+                                                <td>
+                                                    <input
+                                                        type="text"
+                                                        value={sensorRecordPoints[sensor.id] || ""}
+                                                        onChange={handleSensorRecordPointChange(sensor.id)}
+                                                        className={`sensors_parametrs ${invalidParameters[sensor.id] ? 'invalid' : ''}`}
+                                                        disabled={role === "user"}
+                                                    />
+                                                    {sensor.unit.name.en}
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
 
                         <div className="display-content-info-image">
@@ -230,7 +301,7 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId, selectedUnitId }) => 
                             </div>
                         </div>
                     </div>
-                    {role == 'manager' ? (
+                    {role === 'manager' ? (
                         <div className="display-content-buttons">
                             <button onClick={handleSave}>Save</button>
                             <button onClick={handleUndoChanges}>Undo Changes</button>
