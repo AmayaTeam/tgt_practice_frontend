@@ -8,11 +8,10 @@
     padding: 20px;
 }
 
-
 .level1 p {
     cursor: pointer;
-    margin-left: 0;
-    font-size: 18px;
+    margin: 0;
+    font-size: 1.2rem;
     padding: 2px;
     background: url("/src/assets/folder-icon.png") no-repeat left center;
     padding-left: 20px;
@@ -21,7 +20,7 @@
 .level2 p {
     cursor: pointer;
     margin-left: 20px;
-    font-size: 16px;
+    font-size: 1rem;
     padding: 2px;
     background: url("/src/assets/type-icon.png") no-repeat left center;
     padding-left: 25px;
@@ -34,7 +33,7 @@
 .level3 p {
     cursor: pointer;
     margin-left: 40px;
-    font-size: 14px;
+    font-size: 0.9rem;
     padding: 2px;
     align-items: center;
     background: url("/src/assets/module-icon.png") no-repeat left center;
@@ -79,10 +78,6 @@
     margin: 0;
     font-size: 18px;
 }
-
-/*.sort span{*/
-/*    color: #4c4c4c;*/
-/*}*/
 
 .sort {
     display: flex;
