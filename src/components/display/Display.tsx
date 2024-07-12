@@ -4,10 +4,7 @@ import useToolModuleQuery from "../../lib/hooks/tool_module.ts";
 import { useParameterUpdate } from "../../lib/hooks/ToolModule/useParameterUpdate.ts";
 import Cookies from 'js-cookie';
 import Modal from "../Modal/Modal.tsx";
-interface DisplayProps {
-    selectedItemId: string | null;
-    selectedUnitId: string;
-}
+
 interface DisplayProps {
     selectedItemId: string | null;
     selectedUnitId: string;
@@ -27,7 +24,7 @@ interface Parameter {
 }
 
 interface Sensor {
-    id: number; // или string, если идентификатор строковый
+    id: string;
     rToolsensortype: {
         name: string;
     };
@@ -39,31 +36,13 @@ interface Sensor {
     };
 }
 
-interface Data {
-    sn: string;
-    rModuleType: {
-        name: string;
-        rModulesGroup: {
-            name: string;
-        };
-    };
-    parameterSet: Parameter[];
-    toolinstalledsensorSet: Sensor[];
-    image: string;
-}
-interface Sensor {
-    id: number; // или string, если идентификатор строковый
-    rToolsensortypeId: {
-        name: string;
-    };
-    recordPoint: string;
-}
-
 const Display: React.FC<DisplayProps> = ({ selectedItemId, selectedUnitId }) => {
-    console.log("Параметры запроса", selectedItemId, selectedUnitId)
+    console.log("Параметры запроса", selectedItemId, selectedUnitId);
     const { loading, error, data } = useToolModuleQuery({ id: selectedItemId, unitSystem: selectedUnitId });
     const { updateParameter } = useParameterUpdate();
     const [parameters, setParameters] = useState<Record<string, string>>({});
+    const [sensorRecordPoints, setSensorRecordPoints] = useState<Record<string, string>>({});
+    const [invalidParameters, setInvalidParameters] = useState<Record<string, boolean>>({});
     const hiddenParameters = ['Image h_y1', 'Image h_y2'];
     const [showModal, setShowModal] = useState<boolean>(false);
     const [modalMessage, setModalMessage] = useState<string>("");
@@ -76,8 +55,15 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId, selectedUnitId }) => 
                 }
                 return acc;
             }, {});
-            
             setParameters(initialParameters);
+        }
+
+        if (data && data.toolinstalledsensorSet) {
+            const initialSensors = data.toolinstalledsensorSet.reduce((acc: Record<string, string>, sensor: Sensor) => {
+                acc[sensor.id] = sensor.recordPoint;
+                return acc;
+            }, {});
+            setSensorRecordPoints(initialSensors);
         }
     }, [data]);
 
@@ -85,15 +71,55 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId, selectedUnitId }) => 
         const { value } = event.target;
         const regex = /^\d*\.?\d*$/;
 
+        setParameters((prevParameters) => ({
+            ...prevParameters,
+            [paramId]: value,
+        }));
+
         if (regex.test(value)) {
-            setParameters((prevParameters) => ({
-                ...prevParameters,
-                [paramId]: value,
+            setInvalidParameters((prevInvalid) => ({
+                ...prevInvalid,
+                [paramId]: false,
             }));
         } else {
+            setInvalidParameters((prevInvalid) => ({
+                ...prevInvalid,
+                [paramId]: true,
+            }));
         }
     };
+
+    const handleSensorRecordPointChange = (sensorId: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
+        const { value } = event.target;
+        const regex = /^\d*\.?\d*$/;
+
+        setSensorRecordPoints((prevRecordPoints) => ({
+            ...prevRecordPoints,
+            [sensorId]: value,
+        }));
+
+        if (regex.test(value)) {
+            setInvalidParameters((prevInvalid) => ({
+                ...prevInvalid,
+                [sensorId]: false,
+            }));
+        } else {
+            setInvalidParameters((prevInvalid) => ({
+                ...prevInvalid,
+                [sensorId]: true,
+            }));
+        }
+    };
+
     const handleSave = async () => {
+        const hasInvalidInputs = Object.values(invalidParameters).some((isInvalid) => isInvalid);
+
+        if (hasInvalidInputs) {
+            setShowModal(true);
+            setModalMessage("The entered values have the wrong data type, the data will not be saved.");
+            return;
+        }
+
         if (selectedItemId && data && data.parameterSet) {
             const updatedParameters = Object.entries(parameters).reduce((acc, [paramId, value]) => {
                 const originalParam = data.parameterSet.find((param: Parameter) => param.id === paramId);
@@ -103,8 +129,17 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId, selectedUnitId }) => 
                 return acc;
             }, [] as { id: string; parameterValue: number }[]);
 
-            if (updatedParameters.length > 0) {
-                console.log("Updating parameters:", updatedParameters);
+            const updatedSensors = Object.entries(sensorRecordPoints).reduce((acc, [sensorId, value]) => {
+                const originalSensor = data.toolinstalledsensorSet.find((sensor: Sensor) => sensor.id === sensorId);
+                if (originalSensor && originalSensor.recordPoint !== value) {
+                    acc.push({ id: sensorId, recordPoint: value });
+                }
+                return acc;
+            }, [] as { id: string; recordPoint: string }[]);
+
+            if (updatedParameters.length > 0 || updatedSensors.length > 0) {
+                console.log("Обновление параметров:", updatedParameters);
+                console.log("Обновление сенсоров:", updatedSensors);
                 try {
                     for (const param of updatedParameters) {
                         await updateParameter({
@@ -116,19 +151,29 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId, selectedUnitId }) => 
                             }
                         });
                     }
+                    for (const sensor of updatedSensors) {
+                        // Здесь должна быть ваша функция для обновления сенсоров
+                        // await updateSensor({
+                        //     variables: {
+                        //         input: {
+                        //             id: sensor.id,
+                        //             recordPoint: sensor.recordPoint
+                        //         }
+                        //     }
+                        // });
+                    }
                     setShowModal(true);
-                    setModalMessage("Update successful!");
+                    setModalMessage("The update was successful!");
                 } catch (error) {
                     setShowModal(true);
-                    setModalMessage("The entered values have the wrong data type, the data will not be saved.");
+                    setModalMessage("An error occurred while saving the data.");
                 }
             }
         }
     };
 
-    if (loading) return console.log("Loading")
-    if (error) return console.log("Error:" + error.message);
-
+    if (loading) return console.log("Загрузка");
+    if (error) return console.log("Ошибка:" + error.message);
 
     const handleImageExport = async () => {
         if (img !== undefined) {
@@ -141,9 +186,6 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId, selectedUnitId }) => 
         }
     };
 
-    if (loading) return console.log("Loading")
-    if (error) return console.log("Error:" + error.message);
-
     const img = "data:image/png;base64," + data.image;
     const role = Cookies.get('role');
 
@@ -152,13 +194,12 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId, selectedUnitId }) => 
         inputs.forEach((input: HTMLInputElement) => {
             input.value = input.defaultValue;
         });
+        setInvalidParameters({});
     };
 
     const closeModal = () => {
         setShowModal(false);
     };
-//the unit of measurement of the first sensor will be displayed
-const unit = data.toolinstalledsensorSet.length > 0 ? data.toolinstalledsensorSet[0].unit.name.en : "unit";
 
     return (
         <div className="display-container">
@@ -199,56 +240,57 @@ const unit = data.toolinstalledsensorSet.length > 0 ? data.toolinstalledsensorSe
                             <div className="params">
                                 <h4>Housing Params</h4>
                                 <div className="Housing_params-content">
-                                {data.parameterSet
-                                    .filter((param: Parameter) => !hiddenParameters.includes(param.parameterType.parameterName)) // фильтруем параметры, которые не должны быть скрыты
-                                    .map((param: Parameter) => (
-                                        <div className="parametr" key={param.id}>
-                                            <p className="title_parametrs">{param.parameterType.parameterName}</p>
-                                            <input
-                                                className="num_parametrs"
-                                                value={parameters[param.id] || ""}
-                                                onChange={handleParameterChange(param.id)}
-                                                disabled={role === "user"}
-                                            />
-                                            <p className="unit_parametrs">{param.unit.name.en}</p>
-                                        </div>
-                                    ))}
-
+                                    {data.parameterSet
+                                        .filter((param: Parameter) => !hiddenParameters.includes(param.parameterType.parameterName))
+                                        .map((param) => (
+                                            <div className="parametr" key={param.id}>
+                                                <p className="title_parametrs">{param.parameterType.parameterName}</p>
+                                                <input
+                                                    className={`num_parametrs ${invalidParameters[param.id] ? 'invalid' : ''}`}
+                                                    value={parameters[param.id] || ""}
+                                                    onChange={handleParameterChange(param.id)}
+                                                    disabled={role === "user"}
+                                                />
+                                                <p className="unit_parametrs">{param.unit.name.en}</p>
+                                            </div>
+                                        ))}
                                 </div>
                             </div>
 
                             <div className="params">
-                            <h4>Housing Sensors</h4>
-                            <table className="Housing_params-table">
-                                <thead>
-                                    <tr>
-                                        <th>Name</th>
-                                        <th>Record Point, {unit}</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {data.toolinstalledsensorSet.map((sensor: Sensor, index: number) => (
-                                        <tr key={index}>
-                                            <td>
-                                                <input
-                                                    type="text"
-                                                    defaultValue={sensor.rToolsensortype.name}
-                                                    disabled={role === "user"}
-                                                />
-                                            </td>
-                                            <td>
-                                                <input
-                                                    type="text"
-                                                    defaultValue={sensor.recordPoint}
-                                                    disabled={role === "user"}
-                                                />
-{/*                                                 {sensor.unit.name.en}
- */}                                            </td>
+                                <h4>Housing Sensors</h4>
+                                <table className="Housing_params-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Record Point</th>
                                         </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
+                                    </thead>
+                                    <tbody>
+                                        {data.toolinstalledsensorSet.map((sensor: Sensor) => (
+                                            <tr key={sensor.id}>
+                                                <td>
+                                                    <input
+                                                        type="text"
+                                                        defaultValue={sensor.rToolsensortype.name}
+                                                        disabled={role === "user"}
+                                                    />
+                                                </td>
+                                                <td>
+                                                    <input
+                                                        type="text"
+                                                        value={sensorRecordPoints[sensor.id] || ""}
+                                                        onChange={handleSensorRecordPointChange(sensor.id)}
+                                                        className={`sensors_parametrs ${invalidParameters[sensor.id] ? 'invalid' : ''}`}
+                                                        disabled={role === "user"}
+                                                    />
+                                                    {sensor.unit.name.en}
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
 
                         <div className="display-content-info-image">
@@ -259,7 +301,7 @@ const unit = data.toolinstalledsensorSet.length > 0 ? data.toolinstalledsensorSe
                             </div>
                         </div>
                     </div>
-                    {role == 'manager' ? (
+                    {role === 'manager' ? (
                         <div className="display-content-buttons">
                             <button onClick={handleSave}>Save</button>
                             <button onClick={handleUndoChanges}>Undo Changes</button>
