@@ -190,10 +190,24 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId, selectedUnitId }) => 
     const role = Cookies.get('role');
 
     const handleUndoChanges = () => {
-        const inputs = document.querySelectorAll('input');
-        inputs.forEach((input: HTMLInputElement) => {
-            input.value = input.defaultValue;
-        });
+        if (data && data.parameterSet) {
+            const initialParameters = data.parameterSet.reduce((acc: Record<string, string>, param: Parameter) => {
+                if (!hiddenParameters.includes(param.parameterType.parameterName)) {
+                    acc[param.id] = param.parameterValue.toFixed(2);
+                }
+                return acc;
+            }, {});
+            setParameters(initialParameters);
+        }
+    
+        if (data && data.toolinstalledsensorSet) {
+            const initialSensors = data.toolinstalledsensorSet.reduce((acc: Record<string, string>, sensor: Sensor) => {
+                acc[sensor.id] = sensor.recordPoint;
+                return acc;
+            }, {});
+            setSensorRecordPoints(initialSensors);
+        }
+    
         setInvalidParameters({});
     };
 
