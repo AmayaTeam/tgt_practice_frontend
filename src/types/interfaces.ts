@@ -48,6 +48,7 @@ export interface Parameter {
 export interface Sensor {
     id: string;
     rToolsensortype: {
+        id: string;
         name: string;
     };
     recordPoint: string;
