@@ -19,6 +19,7 @@ interface DisplayProps {
 
 const Display: React.FC<DisplayProps> = ({ selectedItemId, selectedUnitId }) => {
     console.log("Параметры запроса", selectedItemId, selectedUnitId);
+    console.log("Параметры запроса", selectedItemId, selectedUnitId);
     const { loading, error, data } = useToolModuleQuery({ id: selectedItemId, unitSystem: selectedUnitId });
     const { updateParameter } = useParameterUpdate();
     const [parameters, setParameters] = useState<Record<string, string>>({});
