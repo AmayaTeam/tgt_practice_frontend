@@ -79,6 +79,7 @@ const Header: React.FC<HeaderProps> = ({ setSelectedUnitId }) => {
     const handleLogout = () => {
         Cookies.remove('access_token');
         Cookies.remove('refresh_token');
+        Cookies.remove('csrftoken');
         localStorage.removeItem('jwt_token');
         localStorage.removeItem('refresh_token');
         window.location.href = 'http://localhost:8000/logout'; // Redirect to login page

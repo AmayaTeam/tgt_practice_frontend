@@ -22,16 +22,27 @@ const List: React.FC<ListProps> = ({ onItemClick }) => {
         }
     }, [data, selectedSort]);
 
+    useEffect(() => {
+        if (data) {
+            setSortedData(
+                sortData(data.toolModuleGroups, selectedSort).filter((group) =>
+                    group.name.toLowerCase().includes(searchText.toLowerCase()) ||
+                    group.toolmoduletypeSet.some(type =>
+                        type.name.toLowerCase().includes(searchText.toLowerCase()) ||
+                        type.toolmoduleSet?.some(module => module.sn.toLowerCase().includes(searchText.toLowerCase()))
+                    )
+                )
+            );
+        }
+    }, [data, selectedSort, searchText]);
+
+
     const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSearchText(event.target.value);
     };
 
     const handleCheckboxChange = (value: string) => {
         setSelectedSort(value);
-    };
-
-    const handleSearch = () => {
-        // Обработка поиска
     };
 
     const sortData = (data: ToolModuleGroup[], sortBy: string) => {
@@ -47,12 +58,12 @@ const List: React.FC<ListProps> = ({ onItemClick }) => {
         return data;
     };
 
-    if (loading) console.log(loading);
-    if (error) console.log(error);
+    if (loading) return <div>Loading...</div>;
+    if (error) return <div>Error: {error.message}</div>;
 
     return (
         <div className="list-container">
-            <SearchBar searchText={searchText} onSearchChange={handleSearchChange} onSearch={handleSearch} />
+            <SearchBar searchText={searchText} onSearchChange={handleSearchChange} />
             <SortOptions selectedSort={selectedSort} onCheckboxChange={handleCheckboxChange} />
             <LevelList
                 sortedData={sortedData}

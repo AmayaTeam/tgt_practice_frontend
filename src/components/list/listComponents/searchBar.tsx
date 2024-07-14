@@ -3,10 +3,9 @@ import React from 'react';
 interface SearchBarProps {
     searchText: string;
     onSearchChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-    onSearch: () => void;
 }
 
-const SearchBar: React.FC<SearchBarProps> = ({ searchText, onSearchChange, onSearch }) => {
+const SearchBar: React.FC<SearchBarProps> = ({ searchText, onSearchChange }) => {
     return (
         <div className="search">
             <input
@@ -16,7 +15,6 @@ const SearchBar: React.FC<SearchBarProps> = ({ searchText, onSearchChange, onSea
                 placeholder="Enter..."
                 className="search-input"
             />
-            <button onClick={onSearch} className="search-button"><p>SEARCH</p></button>
         </div>
     );
 };

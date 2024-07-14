@@ -31,3 +31,29 @@ export interface ToolModuleGroup {
     name: string;
     toolmoduletypeSet: ToolModuleType[];
 }
+
+export interface Parameter {
+    id: string;
+    parameterType: {
+        parameterName: string;
+    };
+    parameterValue: number;
+    unit: {
+        name: {
+            en: string;
+        };
+    };
+}
+
+export interface Sensor {
+    id: string;
+    rToolsensortype: {
+        name: string;
+    };
+    recordPoint: string;
+    unit: {
+        name: {
+            en: string;
+        };
+    };
+}
