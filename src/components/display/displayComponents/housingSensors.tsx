@@ -3,9 +3,9 @@ import { Sensor } from "src/types/interfaces";
 
 interface HousingSensorsProps {
     sensors: Sensor[];
-    sensorRecordPoints: any;
-    handleSensorRecordPointChange: any;
-    invalidParameters: any;
+    sensorRecordPoints: Record<string, string>;
+    handleSensorRecordPointChange: (id: string) => (event: React.ChangeEvent<HTMLInputElement>) => void;
+    invalidParameters: Record<string, boolean>;
     role: string | undefined;
 }
 
@@ -36,8 +36,8 @@ const HousingSensors: React.FC<HousingSensorsProps> = ({ sensors, sensorRecordPo
 
 interface DisplaySensorComponentProps {
     sensor: Sensor;
-    recordPoint: any;
-    onChange: any;
+    recordPoint: string;
+    onChange: (id: string) => (event: React.ChangeEvent<HTMLInputElement>) => void;
     isInvalid: boolean;
     role: string | undefined;
 }
