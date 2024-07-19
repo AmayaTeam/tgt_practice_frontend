@@ -58,6 +58,10 @@ const List: React.FC<ListProps> = ({ onItemClick }) => {
         return data;
     };
 
+    const handleDeleteGroup = (id: string) => {
+        setSortedData((prevData) => prevData.filter(group => group.id !== id));
+    };
+
     if (loading) return <div>Loading...</div>;
     if (error) return <div>Error: {error.message}</div>;
 
@@ -68,6 +72,7 @@ const List: React.FC<ListProps> = ({ onItemClick }) => {
             <LevelList
                 sortedData={sortedData}
                 onItemClick={onItemClick}
+                onDeleteGroup={handleDeleteGroup}
             />
         </div>
     );

@@ -1,13 +1,15 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import { ToolModuleGroup } from 'src/types/interfaces';
 import ContextMenu from './ContextMenu';
+import { useDeleteToolModuleGroup } from "src/lib/hooks/ToolModuleGroup/useDeleteToolModuleGroup.ts";
 
 interface LevelListProps {
     sortedData: ToolModuleGroup[];
     onItemClick: (id: string) => void;
+    onDeleteGroup: (id: string) => void;
 }
 
-const LevelList: React.FC<LevelListProps> = ({ sortedData, onItemClick }) => {
+const LevelList: React.FC<LevelListProps> = ({ sortedData, onItemClick, onDeleteGroup }) => {
     const [expandedItems, setExpandedItems] = useState<{ [key: string]: boolean }>({});
     const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
     const [contextMenu, setContextMenu] = useState<{
@@ -16,6 +18,8 @@ const LevelList: React.FC<LevelListProps> = ({ sortedData, onItemClick }) => {
         options: string[];
         onOptionClick: (option: string) => void;
     } | null>(null);
+
+    const { deleteToolModuleGroup } = useDeleteToolModuleGroup();
 
     const handleToggle = (id: string) => {
         setExpandedItems((prev) => ({
@@ -47,9 +51,24 @@ const LevelList: React.FC<LevelListProps> = ({ sortedData, onItemClick }) => {
         });
     };
 
-    const handleContextMenuOptionClick = (option: string, id: string, level: number) => {
+    const handleContextMenuOptionClick = async (option: string, id: string, level: number) => {
         console.log(`Option clicked: ${option} for id: ${id} at level: ${level}`);
         setContextMenu(null);
+
+        if (option === 'Delete Group' && level === 1) {
+            try {
+                const response = await deleteToolModuleGroup({ variables: { input: { id } } });
+                if (response.data.deleteToolModuleGroup.success) {
+                    // Удаление группы из локального состояния для динамического обновления
+                    onDeleteGroup(id);
+                    console.log(`Group with id ${id} deleted successfully`);
+                } else {
+                    console.log(`Failed to delete group with id ${id}`);
+                }
+            } catch (error) {
+                console.error(`Error deleting group with id ${id}:`, error);
+            }
+        }
     };
 
     return (
