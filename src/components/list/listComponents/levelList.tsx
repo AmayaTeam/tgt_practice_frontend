@@ -3,15 +3,17 @@ import { ToolModuleGroup } from 'src/types/interfaces';
 import ContextMenu from './ContextMenu';
 import { useDeleteToolModuleGroup } from "src/lib/hooks/ToolModuleGroup/useDeleteToolModuleGroup.ts";
 import { useDeleteToolModuleType } from "src/lib/hooks/ToolModuleType/useDeleteToolModuleType.ts";
+import { useDeleteToolModule } from "src/lib/hooks/ToolModule/useDeleteToolModule.ts";
 
 interface LevelListProps {
     sortedData: ToolModuleGroup[];
     onItemClick: (id: string) => void;
     onDeleteGroup: (id: string) => void;
     onDeleteType: (groupId: string, typeId: string) => void;
+    onDeleteModule: (typeId: string, moduleId: string) => void;
 }
 
-const LevelList: React.FC<LevelListProps> = ({ sortedData, onItemClick, onDeleteGroup, onDeleteType }) => {
+const LevelList: React.FC<LevelListProps> = ({ sortedData, onItemClick, onDeleteGroup, onDeleteType, onDeleteModule }) => {
     const [expandedItems, setExpandedItems] = useState<{ [key: string]: boolean }>({});
     const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
     const [contextMenu, setContextMenu] = useState<{
@@ -23,6 +25,7 @@ const LevelList: React.FC<LevelListProps> = ({ sortedData, onItemClick, onDelete
 
     const { deleteToolModuleGroup } = useDeleteToolModuleGroup();
     const { deleteToolModuleType } = useDeleteToolModuleType();
+    const { deleteToolModule } = useDeleteToolModule();
 
     const handleToggle = (id: string) => {
         setExpandedItems((prev) => ({
@@ -86,6 +89,21 @@ const LevelList: React.FC<LevelListProps> = ({ sortedData, onItemClick, onDelete
                 }
             } catch (error) {
                 console.error(`Error deleting type with id ${id}:`, error);
+            }
+        } else if (option === 'Delete Module' && level === 3) {
+            try {
+                const response = await deleteToolModule({ variables: { input: { id } } });
+                if (response.data.deleteToolModule.success) {
+                    const typeId = sortedData.flatMap(group => group.toolmoduletypeSet).find(type => type.toolmoduleSet.some(module => module.id === id))?.id;
+                    if (typeId) {
+                        onDeleteModule(typeId, id);
+                        console.log(`Module with id ${id} deleted successfully`);
+                    }
+                } else {
+                    console.log(`Failed to delete module with id ${id}`);
+                }
+            } catch (error) {
+                console.error(`Error deleting module with id ${id}:`, error);
             }
         }
     };
