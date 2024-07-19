@@ -4,6 +4,7 @@ import ContextMenu from './ContextMenu';
 import { useDeleteToolModuleGroup } from "src/lib/hooks/ToolModuleGroup/useDeleteToolModuleGroup.ts";
 import { useDeleteToolModuleType } from "src/lib/hooks/ToolModuleType/useDeleteToolModuleType.ts";
 import { useDeleteToolModule } from "src/lib/hooks/ToolModule/useDeleteToolModule.ts";
+import useDeleteHandlers from "src/utils/deleteHandler.ts";
 
 interface LevelListProps {
     sortedData: ToolModuleGroup[];
@@ -21,9 +22,7 @@ const LevelList: React.FC<LevelListProps> = ({ sortedData, onItemClick, onDelete
         onOptionClick: (option: string) => void;
     } | null>(null);
 
-    const { deleteToolModuleGroup } = useDeleteToolModuleGroup();
-    const { deleteToolModuleType } = useDeleteToolModuleType();
-    const { deleteToolModule } = useDeleteToolModule();
+    const deleteHandlers = useDeleteHandlers();
 
     const handleToggle = (id: string) => {
         setExpandedItems((prev) => ({
@@ -59,50 +58,27 @@ const LevelList: React.FC<LevelListProps> = ({ sortedData, onItemClick, onDelete
         console.log(`Option clicked: ${option} for id: ${id} at level: ${level}`);
         setContextMenu(null);
 
-        if (option === 'Delete Group' && level === 1) {
+        const handler = deleteHandlers[level];
+        if (handler) {
             try {
-                const response = await deleteToolModuleGroup({ variables: { input: { id } } });
-                if (response.data.deleteToolModuleGroup.success) {
-                    // Удаление группы из локального состояния для динамического обновления
-                    onDeleteItem(1, id);
-                    console.log(`Group with id ${id} deleted successfully`);
-                } else {
-                    console.log(`Failed to delete group with id ${id}`);
-                }
-            } catch (error) {
-                console.error(`Error deleting group with id ${id}:`, error);
-            }
-        } else if (option === 'Delete Type' && level === 2) {
-            try {
-                const response = await deleteToolModuleType({ variables: { input: { id } } });
-                if (response.data.deleteToolModuleType.success) {
-                    // Найти соответствующую группу и удалить тип
-                    const groupId = sortedData.find(group => group.toolmoduletypeSet.some(type => type.id === id))?.id;
-                    if (groupId) {
-                        onDeleteItem(2, id, groupId);
-                        console.log(`Type with id ${id} deleted successfully`);
+                const result = level === 2 || level === 3
+                    ? await handler.delete(id, sortedData)
+                    : await handler.delete(id);
+
+                if (result.success) {
+                    if (level === 2) {
+                        onDeleteItem(level, id, result.groupId);
+                    } else if (level === 3) {
+                        onDeleteItem(level, id, result.typeId);
+                    } else {
+                        onDeleteItem(level, id);
                     }
-                } else {
-                    console.log(`Failed to delete type with id ${id}`);
                 }
             } catch (error) {
-                console.error(`Error deleting type with id ${id}:`, error);
+                console.error(`Error deleting ${option.toLowerCase()} with id ${id}:`, error);
             }
-        } else if (option === 'Delete Module' && level === 3) {
-            try {
-                const response = await deleteToolModule({ variables: { input: { id } } });
-                if (response.data.deleteToolModule.success) {
-                    const typeId = sortedData.flatMap(group => group.toolmoduletypeSet).find(type => type.toolmoduleSet.some(module => module.id === id))?.id;
-                    if (typeId) {
-                        onDeleteItem(3, id, typeId);
-                        console.log(`Module with id ${id} deleted successfully`);
-                    }
-                } else {
-                    console.log(`Failed to delete module with id ${id}`);
-                }
-            } catch (error) {
-                console.error(`Error deleting module with id ${id}:`, error);
-            }
+        } else {
+            console.log(`No handler found for level ${level}`);
         }
     };
 
