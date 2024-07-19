@@ -8,12 +8,10 @@ import { useDeleteToolModule } from "src/lib/hooks/ToolModule/useDeleteToolModul
 interface LevelListProps {
     sortedData: ToolModuleGroup[];
     onItemClick: (id: string) => void;
-    onDeleteGroup: (id: string) => void;
-    onDeleteType: (groupId: string, typeId: string) => void;
-    onDeleteModule: (typeId: string, moduleId: string) => void;
+    onDeleteItem: (level: number, id: string, parentId?: string) => void;
 }
 
-const LevelList: React.FC<LevelListProps> = ({ sortedData, onItemClick, onDeleteGroup, onDeleteType, onDeleteModule }) => {
+const LevelList: React.FC<LevelListProps> = ({ sortedData, onItemClick, onDeleteItem }) => {
     const [expandedItems, setExpandedItems] = useState<{ [key: string]: boolean }>({});
     const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
     const [contextMenu, setContextMenu] = useState<{
@@ -66,7 +64,7 @@ const LevelList: React.FC<LevelListProps> = ({ sortedData, onItemClick, onDelete
                 const response = await deleteToolModuleGroup({ variables: { input: { id } } });
                 if (response.data.deleteToolModuleGroup.success) {
                     // Удаление группы из локального состояния для динамического обновления
-                    onDeleteGroup(id);
+                    onDeleteItem(1, id);
                     console.log(`Group with id ${id} deleted successfully`);
                 } else {
                     console.log(`Failed to delete group with id ${id}`);
@@ -81,7 +79,7 @@ const LevelList: React.FC<LevelListProps> = ({ sortedData, onItemClick, onDelete
                     // Найти соответствующую группу и удалить тип
                     const groupId = sortedData.find(group => group.toolmoduletypeSet.some(type => type.id === id))?.id;
                     if (groupId) {
-                        onDeleteType(groupId, id);
+                        onDeleteItem(2, id, groupId);
                         console.log(`Type with id ${id} deleted successfully`);
                     }
                 } else {
@@ -96,7 +94,7 @@ const LevelList: React.FC<LevelListProps> = ({ sortedData, onItemClick, onDelete
                 if (response.data.deleteToolModule.success) {
                     const typeId = sortedData.flatMap(group => group.toolmoduletypeSet).find(type => type.toolmoduleSet.some(module => module.id === id))?.id;
                     if (typeId) {
-                        onDeleteModule(typeId, id);
+                        onDeleteItem(3, id, typeId);
                         console.log(`Module with id ${id} deleted successfully`);
                     }
                 } else {

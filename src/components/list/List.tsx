@@ -93,6 +93,17 @@ const List: React.FC<ListProps> = ({ onItemClick }) => {
         );
     };
 
+    const handleDeleteItem = (level: number, id: string, parentId?: string) => {
+        if (level === 1) {
+            handleDeleteGroup(id);
+        } else if (level === 2 && parentId) {
+            handleDeleteType(parentId, id);
+        } else if (level === 3 && parentId) {
+            handleDeleteModule(parentId, id);
+        }
+    };
+
+
     if (loading) return <div>Loading...</div>;
     if (error) return <div>Error: {error.message}</div>;
 
@@ -103,9 +114,7 @@ const List: React.FC<ListProps> = ({ onItemClick }) => {
             <LevelList
                 sortedData={sortedData}
                 onItemClick={onItemClick}
-                onDeleteGroup={handleDeleteGroup}
-                onDeleteType={handleDeleteType}
-                onDeleteModule={handleDeleteModule}
+                onDeleteItem={handleDeleteItem}
             />
         </div>
     );
