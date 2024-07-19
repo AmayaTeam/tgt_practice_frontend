@@ -2,14 +2,16 @@ import React, {useEffect, useState} from 'react';
 import { ToolModuleGroup } from 'src/types/interfaces';
 import ContextMenu from './ContextMenu';
 import { useDeleteToolModuleGroup } from "src/lib/hooks/ToolModuleGroup/useDeleteToolModuleGroup.ts";
+import { useDeleteToolModuleType } from "src/lib/hooks/ToolModuleType/useDeleteToolModuleType.ts";
 
 interface LevelListProps {
     sortedData: ToolModuleGroup[];
     onItemClick: (id: string) => void;
     onDeleteGroup: (id: string) => void;
+    onDeleteType: (groupId: string, typeId: string) => void;
 }
 
-const LevelList: React.FC<LevelListProps> = ({ sortedData, onItemClick, onDeleteGroup }) => {
+const LevelList: React.FC<LevelListProps> = ({ sortedData, onItemClick, onDeleteGroup, onDeleteType }) => {
     const [expandedItems, setExpandedItems] = useState<{ [key: string]: boolean }>({});
     const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
     const [contextMenu, setContextMenu] = useState<{
@@ -20,6 +22,7 @@ const LevelList: React.FC<LevelListProps> = ({ sortedData, onItemClick, onDelete
     } | null>(null);
 
     const { deleteToolModuleGroup } = useDeleteToolModuleGroup();
+    const { deleteToolModuleType } = useDeleteToolModuleType();
 
     const handleToggle = (id: string) => {
         setExpandedItems((prev) => ({
@@ -67,6 +70,22 @@ const LevelList: React.FC<LevelListProps> = ({ sortedData, onItemClick, onDelete
                 }
             } catch (error) {
                 console.error(`Error deleting group with id ${id}:`, error);
+            }
+        } else if (option === 'Delete Type' && level === 2) {
+            try {
+                const response = await deleteToolModuleType({ variables: { input: { id } } });
+                if (response.data.deleteToolModuleType.success) {
+                    // Найти соответствующую группу и удалить тип
+                    const groupId = sortedData.find(group => group.toolmoduletypeSet.some(type => type.id === id))?.id;
+                    if (groupId) {
+                        onDeleteType(groupId, id);
+                        console.log(`Type with id ${id} deleted successfully`);
+                    }
+                } else {
+                    console.log(`Failed to delete type with id ${id}`);
+                }
+            } catch (error) {
+                console.error(`Error deleting type with id ${id}:`, error);
             }
         }
     };

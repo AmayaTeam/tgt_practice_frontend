@@ -62,6 +62,20 @@ const List: React.FC<ListProps> = ({ onItemClick }) => {
         setSortedData((prevData) => prevData.filter(group => group.id !== id));
     };
 
+    const handleDeleteType = (groupId: string, typeId: string) => {
+        setSortedData((prevData) =>
+            prevData.map(group => {
+                if (group.id === groupId) {
+                    return {
+                        ...group,
+                        toolmoduletypeSet: group.toolmoduletypeSet.filter(type => type.id !== typeId)
+                    };
+                }
+                return group;
+            })
+        );
+    };
+
     if (loading) return <div>Loading...</div>;
     if (error) return <div>Error: {error.message}</div>;
 
@@ -73,6 +87,7 @@ const List: React.FC<ListProps> = ({ onItemClick }) => {
                 sortedData={sortedData}
                 onItemClick={onItemClick}
                 onDeleteGroup={handleDeleteGroup}
+                onDeleteType={handleDeleteType}
             />
         </div>
     );
