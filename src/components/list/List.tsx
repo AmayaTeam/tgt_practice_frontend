@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import './List.css';
-import useTreeQuery from "src/lib/hooks/tree.ts";
+import useTreeQuery from 'src/lib/hooks/tree.ts';
 import { ToolModuleGroup } from 'src/types/interfaces';
 import SearchBar from './listComponents/searchBar';
 import SortOptions from './listComponents/sortOptions';
 import LevelList from './listComponents/levelList';
-
+import Modal from '../Modal/Modal';
 interface ListProps {
     onItemClick: (itemId: string) => void;
 }
@@ -15,6 +15,9 @@ const List: React.FC<ListProps> = ({ onItemClick }) => {
     const [searchText, setSearchText] = useState<string>('');
     const [selectedSort, setSelectedSort] = useState<string>('novelty');
     const [sortedData, setSortedData] = useState<ToolModuleGroup[]>([]);
+    const [hasUnsavedChanges, setHasUnsavedChanges] = useState<boolean>(false);
+    const [showModal, setShowModal] = useState<boolean>(false);
+    const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
 
     useEffect(() => {
         if (data) {
@@ -25,7 +28,7 @@ const List: React.FC<ListProps> = ({ onItemClick }) => {
     useEffect(() => {
         if (data) {
             setSortedData(
-                sortData(data.toolModuleGroups, selectedSort).filter((group) =>
+                sortData(data.toolModuleGroups, selectedSort).filter(group =>
                     group.name.toLowerCase().includes(searchText.toLowerCase()) ||
                     group.toolmoduletypeSet.some(type =>
                         type.name.toLowerCase().includes(searchText.toLowerCase()) ||
@@ -35,7 +38,6 @@ const List: React.FC<ListProps> = ({ onItemClick }) => {
             );
         }
     }, [data, selectedSort, searchText]);
-
 
     const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSearchText(event.target.value);
@@ -58,6 +60,30 @@ const List: React.FC<ListProps> = ({ onItemClick }) => {
         return data;
     };
 
+    const handleItemClick = (itemId: string) => {
+        if (hasUnsavedChanges) {
+            setSelectedItemId(itemId);
+            setShowModal(true);
+        } else {
+            onItemClick(itemId);
+        }
+    };
+    
+    
+
+    const handleCloseModal = () => {
+        setShowModal(false);
+    };
+
+    const handleConfirmModal = () => {
+        setShowModal(false);
+        if (selectedItemId) {
+            onItemClick(selectedItemId);
+            setSelectedItemId(null);
+            setHasUnsavedChanges(false); // Reset the unsaved changes flag
+        }
+    };
+
     if (loading) return <div>Loading...</div>;
     if (error) return <div>Error: {error.message}</div>;
 
@@ -67,8 +93,16 @@ const List: React.FC<ListProps> = ({ onItemClick }) => {
             <SortOptions selectedSort={selectedSort} onCheckboxChange={handleCheckboxChange} />
             <LevelList
                 sortedData={sortedData}
-                onItemClick={onItemClick}
+                onItemClick={handleItemClick}
+                setHasUnsavedChanges={setHasUnsavedChanges} 
             />
+            {showModal && (
+                <Modal
+                    onClose={handleCloseModal}
+                    onConfirm={handleConfirmModal}
+                    message="You have unsaved changes. Please save or cancel your changes."
+                />
+            )}
         </div>
     );
 };

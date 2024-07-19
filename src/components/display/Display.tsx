@@ -10,8 +10,6 @@ import HousingSensors from "./displayComponents/housingSensors.tsx";
 import ImageSection from "./displayComponents/imageSection.tsx";
 import ControlButtons from "./displayComponents/controlButtons.tsx";
 import { Parameter, Sensor } from "src/types/interfaces.ts";
-
-
 interface DisplayProps {
     selectedItemId: string | null;
     selectedUnitId: string;
@@ -28,6 +26,7 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId, selectedUnitId }) => 
     const hiddenParameters = ['Image h_y1', 'Image h_y2'];
     const [showModal, setShowModal] = useState<boolean>(false);
     const [modalMessage, setModalMessage] = useState<string>("");
+    const [hasUnsavedChanges, setHasUnsavedChanges] = useState<boolean>(false); 
 
     useEffect(() => {
         if (data && data.parameterSet) {
@@ -69,6 +68,8 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId, selectedUnitId }) => 
                 [paramId]: true,
             }));
         }
+
+        setHasUnsavedChanges(true); 
     };
 
     const handleSensorRecordPointChange = (sensorId: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -91,6 +92,8 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId, selectedUnitId }) => 
                 [sensorId]: true,
             }));
         }
+
+        setHasUnsavedChanges(true); // Отметить как несохранённые изменения
     };
 
     const handleSave = async () => {
@@ -146,6 +149,7 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId, selectedUnitId }) => 
                     }
                     setShowModal(true);
                     setModalMessage("The update was successful!");
+                    setHasUnsavedChanges(false); 
                 } catch (error) {
                     setShowModal(true);
                     setModalMessage("An error occurred while saving the data.");
@@ -181,6 +185,7 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId, selectedUnitId }) => 
         }
     
         setInvalidParameters({});
+        setHasUnsavedChanges(false); 
     };
 
     const closeModal = () => {
