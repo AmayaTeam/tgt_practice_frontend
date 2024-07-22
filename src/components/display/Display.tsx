@@ -10,23 +10,23 @@ import HousingSensors from "./displayComponents/housingSensors.tsx";
 import ImageSection from "./displayComponents/imageSection.tsx";
 import ControlButtons from "./displayComponents/controlButtons.tsx";
 import { Parameter, Sensor } from "src/types/interfaces.ts";
+import handleSave from "./handleSave.ts";
 interface DisplayProps {
     selectedItemId: string | null;
     selectedUnitId: string;
 }
 
 const Display: React.FC<DisplayProps> = ({ selectedItemId, selectedUnitId }) => {
-    console.log("Параметры запроса", selectedItemId, selectedUnitId);
-    console.log("Параметры запроса", selectedItemId, selectedUnitId);
     const { loading, error, data } = useToolModuleQuery({ id: selectedItemId, unitSystem: selectedUnitId });
-    const { updateParameter } = useParameterUpdate();
+    const { updateParameter } = useParameterUpdate(); // Hook used in the component
+
     const [parameters, setParameters] = useState<Record<string, string>>({});
     const [sensorRecordPoints, setSensorRecordPoints] = useState<Record<string, string>>({});
     const [invalidParameters, setInvalidParameters] = useState<Record<string, boolean>>({});
     const hiddenParameters = ['Image h_y1', 'Image h_y2'];
     const [showModal, setShowModal] = useState<boolean>(false);
     const [modalMessage, setModalMessage] = useState<string>("");
-    const [hasUnsavedChanges, setHasUnsavedChanges] = useState<boolean>(false); 
+    const [hasUnsavedChanges, setHasUnsavedChanges] = useState<boolean>(false);
 
     useEffect(() => {
         if (data && data.parameterSet) {
@@ -69,7 +69,7 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId, selectedUnitId }) => 
             }));
         }
 
-        setHasUnsavedChanges(true); 
+        setHasUnsavedChanges(true);
     };
 
     const handleSensorRecordPointChange = (sensorId: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -93,74 +93,11 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId, selectedUnitId }) => 
             }));
         }
 
-        setHasUnsavedChanges(true); // Отметить как несохранённые изменения
-    };
-
-    const handleSave = async () => {
-        const hasInvalidInputs = Object.values(invalidParameters).some((isInvalid) => isInvalid);
-
-        if (hasInvalidInputs) {
-            setShowModal(true);
-            setModalMessage("The entered values have the wrong data type, the data will not be saved.");
-            return;
-        }
-
-        if (selectedItemId && data && data.parameterSet) {
-            const updatedParameters = Object.entries(parameters).reduce((acc, [paramId, value]) => {
-                const originalParam = data.parameterSet.find((param: Parameter) => param.id === paramId);
-                if (originalParam && originalParam.parameterValue.toFixed(2) !== value) {
-                    acc.push({ id: paramId, parameterValue: parseFloat(value) });
-                }
-                return acc;
-            }, [] as { id: string; parameterValue: number }[]);
-
-            const updatedSensors = Object.entries(sensorRecordPoints).reduce((acc, [sensorId, value]) => {
-                const originalSensor = data.toolinstalledsensorSet.find((sensor: Sensor) => sensor.id === sensorId);
-                if (originalSensor && originalSensor.recordPoint !== value) {
-                    acc.push({ id: sensorId, recordPoint: value });
-                }
-                return acc;
-            }, [] as { id: string; recordPoint: string }[]);
-
-            if (updatedParameters.length > 0 || updatedSensors.length > 0) {
-                console.log("Обновление параметров:", updatedParameters);
-                console.log("Обновление сенсоров:", updatedSensors);
-                try {
-                    for (const param of updatedParameters) {
-                        await updateParameter({
-                            variables: {
-                                input: {
-                                    id: param.id,
-                                    parameterValue: param.parameterValue
-                                }
-                            }
-                        });
-                    }
-                    for (const sensor of updatedSensors) {
-                        // Здесь должна быть ваша функция для обновления сенсоров
-                        // await updateSensor({
-                        //     variables: {
-                        //         input: {
-                        //             id: sensor.id,
-                        //             recordPoint: sensor.recordPoint
-                        //         }
-                        //     }
-                        // });
-                    }
-                    setShowModal(true);
-                    setModalMessage("The update was successful!");
-                    setHasUnsavedChanges(false); 
-                } catch (error) {
-                    setShowModal(true);
-                    setModalMessage("An error occurred while saving the data.");
-                }
-            }
-        }
+        setHasUnsavedChanges(true);
     };
 
     if (loading) return <div>Loading...</div>;
     if (error) return <div>Error: {error.message}</div>;
-
 
     const img = "data:image/png;base64," + data.image;
     const role = Cookies.get('role');
@@ -175,7 +112,7 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId, selectedUnitId }) => 
             }, {});
             setParameters(initialParameters);
         }
-    
+
         if (data && data.toolinstalledsensorSet) {
             const initialSensors = data.toolinstalledsensorSet.reduce((acc: Record<string, string>, sensor: Sensor) => {
                 acc[sensor.id] = sensor.recordPoint;
@@ -183,9 +120,9 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId, selectedUnitId }) => 
             }, {});
             setSensorRecordPoints(initialSensors);
         }
-    
+
         setInvalidParameters({});
-        setHasUnsavedChanges(false); 
+        setHasUnsavedChanges(false);
     };
 
     const closeModal = () => {
@@ -230,14 +167,24 @@ const Display: React.FC<DisplayProps> = ({ selectedItemId, selectedUnitId }) => 
                     </div>
 
                     <ControlButtons
-                        handleSave={handleSave}
+                        handleSave={() => handleSave({
+                            selectedItemId,
+                            data,
+                            parameters,
+                            sensorRecordPoints,
+                            invalidParameters,
+                            updateParameter,
+                            setShowModal,
+                            setModalMessage,
+                            setHasUnsavedChanges,
+                        })}
                         handleUndoChanges={handleUndoChanges}
                         role={role}
                     />
                 </div>
             </div>
             {showModal && <Modal onClose={closeModal} message={modalMessage} />}
-        </div >
+        </div>
     );
 };
 
