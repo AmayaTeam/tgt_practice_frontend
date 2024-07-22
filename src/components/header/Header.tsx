@@ -8,11 +8,10 @@ import { useUserUnitSystemQuery } from '../../lib/hooks/useUserUnitSystemQuery';
 import { useUpdateProfileUnitSystem } from '../../lib/hooks/UnitSystem/useUpdateProfileUnitSystem';
 
 interface HeaderProps {
-    selectedUnitId: string;
     setSelectedUnitId: React.Dispatch<React.SetStateAction<string>>;
 }
 
-const Header: React.FC<HeaderProps> = ({ selectedUnitId, setSelectedUnitId }) => {
+const Header: React.FC<HeaderProps> = ({ setSelectedUnitId }) => {
     const [isUnitDropdownOpen, setIsUnitDropdownOpen] = useState(false);
     const [isUsernameDropdownOpen, setIsUsernameDropdownOpen] = useState(false);
     const [username, setUsername] = useState('');
@@ -21,7 +20,7 @@ const Header: React.FC<HeaderProps> = ({ selectedUnitId, setSelectedUnitId }) =>
 
     const { loading: userLoading, error: userError, data: userData } = useQuery(GET_CURRENT_USER);
     const { loading: unitSystemsLoading, error: unitSystemsError, data: unitSystemsData } = useUnitSystemsQuery();
-    const { loading: userUnitSystemLoading, error: userUnitSystemError, data: userUnitSystemData } = useUserUnitSystemQuery(userId);
+    const { error: userUnitSystemError, data: userUnitSystemData } = useUserUnitSystemQuery(userId);
     const { updateProfileUnitSystem } = useUpdateProfileUnitSystem();
 
     useEffect(() => {
@@ -80,9 +79,10 @@ const Header: React.FC<HeaderProps> = ({ selectedUnitId, setSelectedUnitId }) =>
     const handleLogout = () => {
         Cookies.remove('access_token');
         Cookies.remove('refresh_token');
+        Cookies.remove('csrftoken');
         localStorage.removeItem('jwt_token');
         localStorage.removeItem('refresh_token');
-        window.location.href = 'http://172.20.10.6:8000/logout'; // Redirect to login page
+        window.location.href = 'https://172.20.10.6/api/logout'; // Redirect to login page
     };
 
     return (

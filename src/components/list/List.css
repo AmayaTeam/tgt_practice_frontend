@@ -1,69 +1,50 @@
 .list-container {
-    /*height: calc(100vh - 36px);*/
     height: calc(100vh - 75px);
     overflow-y: auto;
-    width: 400px;
+    width: 400;
     background-color: white;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     margin-top: 35px;
     padding: 20px;
-
 }
 
-.list {
+.level1 p {
+    cursor: pointer;
+    margin: 0;
+    font-size: 1.2rem;
+    padding: 2px;
+    background: url("/src/assets/folder-icon.png") no-repeat left center;
     padding-left: 20px;
 }
-ul {
-    list-style: none; /* Убираем маркеры списка */
-    padding: 0;
-    margin: 0;
-}
 
-.level1 > li {
+.level2 p {
     cursor: pointer;
-    margin-left: 0; /* Сбрасываем отступ для элементов первого уровня */
-    font-size: 18px;
+    margin-left: 20px;
+    font-size: 1rem;
     padding: 2px;
-    list-style-image: url("/src/assets/folder-icon.png");
+    background: url("/src/assets/type-icon.png") no-repeat left center;
+    padding-left: 25px;
 }
 
-.level2 > li {
-    cursor: pointer;
-    margin-left: 20px; /* Отступ для элементов второго уровня */
-    padding: 2px;
-    list-style-image: url("/src/assets/type-icon.png");
-
+.level3 {
+    padding-left: 10px;
 }
 
-.level3 > li {
+.level3 p {
     cursor: pointer;
-    margin-left: 40px; /* Отступ для элементов третьего уровня */
+    margin-left: 40px;
+    font-size: 0.9rem;
     padding: 2px;
     align-items: center;
-    list-style: url("/src/assets/module-icon.png");
-
+    background: url("/src/assets/module-icon.png") no-repeat left center;
+    padding-left: 25px;
 }
 
-.level3 > li.selected {
+.level3 p.selected {
     background-color: lightgrey;
 }
 
-/*.level1 > li::before {*/
-/*    content: url('/src/assets/folder-icon.png'); !* Добавляем иконку папки перед элементами первого уровня *!*/
-/*    margin-right: 8px; !* Добавляем отступ между иконкой и текстом *!*/
 
-/*}*/
-
-
-/*.level2 > li::before {*/
-/*    content: url('/src/assets/type-icon.png'); !* Иконка типа для элементов второго уровня *!*/
-/*    margin-right: 8px; !* Добавляем отступ между иконкой и текстом *!*/
-/*}*/
-
-/*.level3 > li::before {*/
-/*    !*content: url('/src/assets/module-icon.png'); !* Иконка модуля для элементов третьего уровня *!*!*/
-/*    margin-right: 8px; !* Добавляем отступ между иконкой и текстом *!*/
-/*}*/
 .search {
     margin-bottom: 5px;
     display: flex;
@@ -86,33 +67,34 @@ ul {
     cursor: pointer;
     margin: 0;
     margin-left: 5px;
-    p{
+
+    p {
         margin: 0;
     }
 }
 
-.sort p{
+.sort p {
     color: #4c4c4c;
     margin: 0;
     font-size: 18px;
 }
-/*.sort span{*/
-/*    color: #4c4c4c;*/
-/*}*/
 
 .sort {
     display: flex;
     justify-content: space-between;
     align-items: center;
     width: 100%;
-    margin-top: 10px; /* добавим небольшой отступ сверху для визуального разделения */
+    margin-top: 10px;
+    /* добавим небольшой отступ сверху для визуального разделения */
     margin-bottom: 10px;
 }
-.sort-label{
+
+.sort-label {
     margin-right: 20px;
     height: 100%;
     align-items: center;
 }
+
 .sort-options {
     display: flex;
 }
@@ -127,3 +109,23 @@ ul {
 }
 
 
+.not-found {
+    text-align: center;
+    font-size: 18px;
+}
+.context-menu {
+    position: absolute;
+    background-color: white;
+    border: 1px solid #ccc;
+    z-index: 1000;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.context-menu-item {
+    padding: 8px 12px;
+    cursor: pointer;
+}
+
+.context-menu-item:hover {
+    background-color: #f5f5f5;
+}
