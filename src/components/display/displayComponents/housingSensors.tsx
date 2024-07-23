@@ -9,30 +9,36 @@ interface HousingSensorsProps {
     role: string | undefined;
 }
 
-const HousingSensors: React.FC<HousingSensorsProps> = ({ sensors, sensorRecordPoints, handleSensorRecordPointChange, invalidParameters, role }) => (
-    <div className="params">
-        <h4>Housing Sensors</h4>
-        <table className="Housing_params-table">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Record Point</th>
-                </tr>
-            </thead>
-            <tbody>
-                {sensors.map((sensor: Sensor) => (
-                    <DisplaySensorComponent
-                        key={sensor.rToolsensortype.id}
-                        sensor={sensor}
-                        recordPoint={sensorRecordPoints[sensor.id]}
-                        onChange={handleSensorRecordPointChange}
-                        isInvalid={invalidParameters[sensor.id]}
-                        role={role} />
-                ))}
-            </tbody>
-        </table>
-    </div>
-);
+const HousingSensors: React.FC<HousingSensorsProps> = ({ sensors, sensorRecordPoints, handleSensorRecordPointChange, invalidParameters, role }) => {
+    const firstSensor = sensors[0];
+    const unit = firstSensor ? firstSensor.unit.name.en : "";
+
+    return (
+        <div className="params">
+            <h4>Housing Sensors</h4>
+            <table className="Housing_params-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Record Point, {unit}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {sensors.map((sensor: Sensor) => (
+                        <DisplaySensorComponent
+                            key={sensor.rToolsensortype.id}
+                            sensor={sensor}
+                            recordPoint={sensorRecordPoints[sensor.id]}
+                            onChange={handleSensorRecordPointChange}
+                            isInvalid={invalidParameters[sensor.id]}
+                            role={role}
+                        />
+                    ))}
+                </tbody>
+            </table>
+        </div>
+    );
+};
 
 interface DisplaySensorComponentProps {
     sensor: Sensor;
@@ -55,7 +61,6 @@ const DisplaySensorComponent: React.FC<DisplaySensorComponentProps> = ({ sensor,
                 className={`sensors_parametrs ${isInvalid ? 'invalid' : ''}`}
                 disabled={role === "user"}
             />
-            {sensor.unit.name.en}
         </td>
     </tr>
 );
