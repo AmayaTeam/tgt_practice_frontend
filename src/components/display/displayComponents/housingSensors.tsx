@@ -12,6 +12,7 @@ interface HousingSensorsProps {
 const HousingSensors: React.FC<HousingSensorsProps> = ({ sensors, sensorRecordPoints, handleSensorRecordPointChange, invalidParameters, role }) => {
     const firstSensor = sensors[0];
     const unit = firstSensor ? firstSensor.unit.name.en : "";
+    const hasSensors = sensors.length > 0;
 
     return (
         <div className="params">
@@ -20,7 +21,7 @@ const HousingSensors: React.FC<HousingSensorsProps> = ({ sensors, sensorRecordPo
                 <thead>
                     <tr>
                         <th>Name</th>
-                        <th>Record Point, {unit}</th>
+                        <th>Record Point{hasSensors && unit ? `, ${unit}` : ""}</th>
                     </tr>
                 </thead>
                 <tbody>
