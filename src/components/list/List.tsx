@@ -58,6 +58,52 @@ const List: React.FC<ListProps> = ({ onItemClick }) => {
         return data;
     };
 
+    const handleDeleteGroup = (id: string) => {
+        setSortedData((prevData) => prevData.filter(group => group.id !== id));
+    };
+
+    const handleDeleteType = (groupId: string, typeId: string) => {
+        setSortedData((prevData) =>
+            prevData.map(group => {
+                if (group.id === groupId) {
+                    return {
+                        ...group,
+                        toolmoduletypeSet: group.toolmoduletypeSet.filter(type => type.id !== typeId)
+                    };
+                }
+                return group;
+            })
+        );
+    };
+
+    const handleDeleteModule = (typeId: string, moduleId: string) => {
+        setSortedData((prevData) =>
+            prevData.map(group => {
+                const updatedTypeSet = group.toolmoduletypeSet.map(type => {
+                    if (type.id === typeId) {
+                        return {
+                            ...type,
+                            toolmoduleSet: type.toolmoduleSet.filter(module => module.id !== moduleId)
+                        };
+                    }
+                    return type;
+                });
+                return { ...group, toolmoduletypeSet: updatedTypeSet };
+            })
+        );
+    };
+
+    const handleDeleteItem = (level: number, id: string, parentId?: string) => {
+        if (level === 1) {
+            handleDeleteGroup(id);
+        } else if (level === 2 && parentId) {
+            handleDeleteType(parentId, id);
+        } else if (level === 3 && parentId) {
+            handleDeleteModule(parentId, id);
+        }
+    };
+
+
     if (loading) return <div>Loading...</div>;
     if (error) return <div>Error: {error.message}</div>;
 
@@ -68,6 +114,7 @@ const List: React.FC<ListProps> = ({ onItemClick }) => {
             <LevelList
                 sortedData={sortedData}
                 onItemClick={onItemClick}
+                onDeleteItem={handleDeleteItem}
             />
         </div>
     );

@@ -1,13 +1,18 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import { ToolModuleGroup } from 'src/types/interfaces';
 import ContextMenu from './ContextMenu';
+import { useDeleteToolModuleGroup } from "src/lib/hooks/ToolModuleGroup/useDeleteToolModuleGroup.ts";
+import { useDeleteToolModuleType } from "src/lib/hooks/ToolModuleType/useDeleteToolModuleType.ts";
+import { useDeleteToolModule } from "src/lib/hooks/ToolModule/useDeleteToolModule.ts";
+import useDeleteHandlers from "src/utils/deleteHandler.ts";
 
 interface LevelListProps {
     sortedData: ToolModuleGroup[];
     onItemClick: (id: string) => void;
+    onDeleteItem: (level: number, id: string, parentId?: string) => void;
 }
 
-const LevelList: React.FC<LevelListProps> = ({ sortedData, onItemClick }) => {
+const LevelList: React.FC<LevelListProps> = ({ sortedData, onItemClick, onDeleteItem }) => {
     const [expandedItems, setExpandedItems] = useState<{ [key: string]: boolean }>({});
     const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
     const [contextMenu, setContextMenu] = useState<{
@@ -16,6 +21,8 @@ const LevelList: React.FC<LevelListProps> = ({ sortedData, onItemClick }) => {
         options: string[];
         onOptionClick: (option: string) => void;
     } | null>(null);
+
+    const deleteHandlers = useDeleteHandlers();
 
     const handleToggle = (id: string) => {
         setExpandedItems((prev) => ({
@@ -47,9 +54,32 @@ const LevelList: React.FC<LevelListProps> = ({ sortedData, onItemClick }) => {
         });
     };
 
-    const handleContextMenuOptionClick = (option: string, id: string, level: number) => {
+    const handleContextMenuOptionClick = async (option: string, id: string, level: number) => {
         console.log(`Option clicked: ${option} for id: ${id} at level: ${level}`);
         setContextMenu(null);
+
+        const handler = deleteHandlers[level];
+        if (handler) {
+            try {
+                const result = level === 2 || level === 3
+                    ? await handler.delete(id, sortedData)
+                    : await handler.delete(id);
+
+                if (result.success) {
+                    if (level === 2) {
+                        onDeleteItem(level, id, result.groupId);
+                    } else if (level === 3) {
+                        onDeleteItem(level, id, result.typeId);
+                    } else {
+                        onDeleteItem(level, id);
+                    }
+                }
+            } catch (error) {
+                console.error(`Error deleting ${option.toLowerCase()} with id ${id}:`, error);
+            }
+        } else {
+            console.log(`No handler found for level ${level}`);
+        }
     };
 
     return (
